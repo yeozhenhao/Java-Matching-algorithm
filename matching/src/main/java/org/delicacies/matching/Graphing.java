@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -17,11 +20,30 @@ import org.jgrapht.alg.interfaces.*;
 import org.jgrapht.alg.shortestpath.*;
 import org.jgrapht.graph.*;
 
+import com.opencsv.CSVReader;
+import com.opencsv.bean.CsvToBeanBuilder;
+import com.opencsv.exceptions.CsvValidationException;
+
 public class Graphing extends Arrange {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws FileNotFoundException, IOException, CsvValidationException {
 		// TODO Auto-generated method stub
-		Integer maxlimit = Integer.valueOf(1); //Set max algorithm path limit (in case of high player numbers) 
+		Integer maxlimit = Integer.valueOf(1); //Set max algorithm path limit (in case of high player numbers)
+		String csv_path = "/matching/playerlist.csv";
+		
+//		CSVReader reader = new CSVReader(new FileReader("playerlist.csv"));
+//	    String [] nextLine;
+//	    while ((nextLine = reader.readNext()) != null) {
+//	        // nextLine[] is an array of values from the line
+//	        System.out.println(nextLine[0] + nextLine[1] + "etc...");
+//	    }
+		
+		List<Player> beans = new CsvToBeanBuilder(new FileReader("playerlist.csv"))
+				.withType(Player.class)
+				.build()
+				.parse();
+		
+		beans.forEach(System.out::println);
 		
 		Player player1 = new Player("yeozhenhao","Elgene","Female","Male");
 		Player player2 = new Player("matt","Matthew","Female","Male");
@@ -121,5 +143,15 @@ public class Graphing extends Arrange {
         
 	}
 	
+	
+//	public class SimplePositionBean  {
+//	    @CsvBindByPosition(position = 0)
+//	    private String exampleColOne;
+//
+//	    @CsvBindByPosition(position = 1)
+//	    private String exampleColTwo;
+//
+//	    // getters and setters
+//	}
 
 }
