@@ -1,7 +1,11 @@
 package org.delicacies.matching;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
@@ -85,17 +89,36 @@ public class Arrange {
 		return stronglyConnectedSubgraphs;
 	}
 	
-	public static void hamilton(Graph<Player, DefaultEdge> G) {
+	public static Map<Integer, GraphPath<Player, DefaultEdge>> find_greatest_path_of_all_vertexes(Graph<Player, DefaultEdge> G, Integer maxlimit) throws NoSuchElementException {
 //		F = [(G,[list(G.nodes())[0]])]
 		AllDirectedPaths<Player, DefaultEdge> paths = new AllDirectedPaths<Player, DefaultEdge>(G);
-	    GraphPath<Player, DefaultEdge> longestPath = paths.getAllPaths(source, target, true, null)
-	        .stream()
-	        .sorted((GraphPath<String, DefaultEdge> path1, GraphPath<String, DefaultEdge> path2)-> new Integer(path2.getLength()).compareTo(path1.getLength()))
-	        .findFirst().get();
-	    System.out.println(longestPath.getLength() +  " " + longestPath);
+		Map<Integer, GraphPath<Player, DefaultEdge>> longestpathMap = new HashMap<>();
+		for (Player player : G.vertexSet()) {
+			for (Player other_player : G.vertexSet()) {
+				if (player.isEqual(other_player) == false) {
+					if (maxlimit == 0) { //if maxlimit = 0 the algorithm will find the greatest length
+						GraphPath<Player, DefaultEdge> longestPath = paths.getAllPaths(player, other_player, true, null)
+						        .stream()
+						        .sorted((GraphPath<Player, DefaultEdge> path1, GraphPath<Player, DefaultEdge> path2)-> Integer.valueOf(path2.getLength()).compareTo(path1.getLength()))
+						        .findFirst().get();
+						    System.out.println(longestPath.getLength() + 1 +  " " + longestPath);
+						    longestpathMap.put(longestPath.getLength() + 1, longestPath);
+					} else {
+						GraphPath<Player, DefaultEdge> longestPath = paths.getAllPaths(player, other_player, true, maxlimit)
+						        .stream()
+						        .sorted((GraphPath<Player, DefaultEdge> path1, GraphPath<Player, DefaultEdge> path2)-> Integer.valueOf(path2.getLength()).compareTo(path1.getLength()))
+						        .findFirst().get();
+						    System.out.println(longestPath.getLength() + 1 +  " " + longestPath);
+						    longestpathMap.put(longestPath.getLength() + 1, longestPath);
+					}
+					
+				}
+			}
+		}
+		return longestpathMap;
 	}
 	
-//	public static calcDepths(g) {    
+//	public static calcDepths(g) {    //NOT USED, DOES NOT WORK
 //
 //	    Map<Player, Integer> vertexToDepthMap = new HashMap<>();
 //	    Iterator<Player> iterator = new TopologicalOrderIterator<Player, DefaultEdge>(g);
