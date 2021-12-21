@@ -3,6 +3,7 @@ package org.delicacies.matching;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -87,7 +88,14 @@ public class Graphing extends Arrange {
         System.out.println("Max Value In Map: " + longestpathMap + "\n");
         
         System.out.println("Max Value In Map: " + maxValueInMap);
-        System.out.println("Longest Path: " + longestpathMap.get(maxValueInMap));
+        System.out.println("Longest Path: " + longestpathMap.get(maxValueInMap));        
+        System.out.println("Accepted Player List " + longestpathMap.get(maxValueInMap).getVertexList());
+        
+        List<Player> accepted_player_list = new ArrayList<>();
+        accepted_player_list = longestpathMap.get(maxValueInMap).getVertexList();
+        List<Player> rejected_player_list = new ArrayList<>();
+        List<Player> rejected_players_list = return_rejected_player_list(player_list, accepted_player_list);
+        
         
 //        GraphPath<Player, DefaultEdge> longestPath = new GraphPath<>();
 //        longestPath = longestpathMap.get(maxValueInMap);
@@ -112,5 +120,6 @@ public class Graphing extends Arrange {
 //        System.out.println("TEST " + stronglyConnectedSubgraphs.toString().replaceAll("[()]", "_"));
         
 	}
+	
 
 }

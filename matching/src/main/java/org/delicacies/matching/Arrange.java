@@ -3,6 +3,7 @@ package org.delicacies.matching;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import java.util.NoSuchElementException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -116,6 +117,14 @@ public class Arrange {
 			}
 		}
 		return longestpathMap;
+	}
+	public static List<Player> return_rejected_player_list(List<Player> player_list, List<Player> accepted_player_list) {
+        List<Player> rejected_player_list = new ArrayList<>();
+        List<Player> rejected_players_list = player_list.stream()
+        		.filter(e -> !accepted_player_list.contains(e))
+        		.collect(Collectors.toList());
+        System.out.println("Rejected players list: " + rejected_players_list);
+        return rejected_player_list;
 	}
 	
 //	public static calcDepths(g) {    //NOT USED, DOES NOT WORK
