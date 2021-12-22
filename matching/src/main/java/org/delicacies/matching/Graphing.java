@@ -50,10 +50,31 @@ public class Graphing extends Arrange {
 		String csv_path = "playerlist.csv";
 		String csv_output = "Accepted Players List.csv";
 
+		//Create mapping before reading CSV
+		Map<String, String> columnMapping = new HashMap<String, String>();
+	    columnMapping.put("Telegram Username", "username");
+	    columnMapping.put("Name", "name");
+	    columnMapping.put("Genderpref", "genderpref");
+	    columnMapping.put("Gender", "gender");
+	    columnMapping.put("Age", "age");
+	    columnMapping.put("Maxage", "maxage");
+	    columnMapping.put("Minage", "minage");
+	    columnMapping.put("Interests", "interests");
+	    columnMapping.put("Twotruthsonelie", "twotruthsonelie");
+	    columnMapping.put("Intro", "introduction");
+	    columnMapping.put("Religion", "religion");
+	    columnMapping.put("Religionqn", "religionqn");
+		HeaderColumnNameTranslateMappingStrategy mappingStrategy = new HeaderColumnNameTranslateMappingStrategy();
+		mappingStrategy.setType(Player.class);
+		mappingStrategy.setColumnMapping(columnMapping);
+		
+		
+		
 		//Recommended to use Bean Builder now
-		Logger logger = Logger.getLogger(Graphing.class.getName());
+//		Logger logger = Logger.getLogger(Graphing.class.getName());
 		CsvToBeanBuilder<Player> beanBuilder = new CsvToBeanBuilder(new FileReader("playerlist.csv"));
-		beanBuilder.withType(Player.class); //setting .withMappingStrategy(setColumnMapping()) gives an error as Conversion of age to int failed. Use the standard @ (e.g. @CsvBindByName)  
+		beanBuilder.withType(Player.class);
+		beanBuilder.withMappingStrategy(mappingStrategy);//setting .withMappingStrategy(setColumnMapping()) gives an error as Conversion of age to int failed. Use the standard @ (e.g. @CsvBindByName)  
 		List<Player> player_list = beanBuilder.build().parse(); //NOTE: csvToBean.parse(strategy, csvReader) is deprecated
 	    
 		
@@ -109,12 +130,12 @@ public class Graphing extends Arrange {
 	            scAlg.getStronglyConnectedComponents();
 		
 		 // prints the strongly connected components //NOT DONE as it will be too long
-//        System.out.println("Strongly connected components:");
-//        for (int i = 0; i < stronglyConnectedSubgraphs.size(); i++) {
-//            System.out.println(stronglyConnectedSubgraphs.get(i));
-//        }
-        
-        remove_graphs_with_no_hamilton_cycle (stronglyConnectedSubgraphs);
+        System.out.println("Strongly connected components:");
+        for (int i = 0; i < stronglyConnectedSubgraphs.size(); i++) {
+            System.out.println(stronglyConnectedSubgraphs.get(i));
+        }
+        List<Graph<Player, DefaultEdge>> new_list_stronglyConnectedSubgraphs = new ArrayList<>();
+        new_list_stronglyConnectedSubgraphs = remove_graphs_with_no_hamilton_cycle(stronglyConnectedSubgraphs);
        
         
 //        System.out.println("Strongly connected components: "); //Copy of above to show that stronglyConnectedSubgraphs has its graphs (with only one neighbour) removed
@@ -122,14 +143,20 @@ public class Graphing extends Arrange {
 //            System.out.println(stronglyConnectedSubgraphs.get(i));
 //        }
         
+        
+        
         Map<Integer, GraphPath<Player, DefaultEdge>> longestpathMap = new HashMap<Integer, GraphPath<Player, DefaultEdge>>();
-        try {
-        	longestpathMap = find_greatest_path_of_all_vertexes(stronglyConnectedSubgraphs.get(0), maxlimit);
-        }	catch (NoSuchElementException NSEe) {
-        	NSEe.printStackTrace();
-        	maxlimit++;
-        	longestpathMap = find_greatest_path_of_all_vertexes(stronglyConnectedSubgraphs.get(0), maxlimit);
+        for (int index = 0; index < new_list_stronglyConnectedSubgraphs.size(); index++) {
+        	try {
+        		System.out.println("\nIndex " + index + " with graph: " + new_list_stronglyConnectedSubgraphs.get(index));
+            	longestpathMap = find_greatest_path_of_all_vertexes(new_list_stronglyConnectedSubgraphs.get(index), maxlimit);
+            }	catch (NoSuchElementException NSEe) {
+            	NSEe.printStackTrace();
+            	maxlimit++;
+            	longestpathMap = find_greatest_path_of_all_vertexes(new_list_stronglyConnectedSubgraphs.get(index), maxlimit);
+            }
         }
+        
         int maxValueInMap = Collections.max(longestpathMap.keySet());
 //        System.out.println("Max Value In Map: " + longestpathMap + "\n");
         
@@ -142,7 +169,7 @@ public class Graphing extends Arrange {
         List<Player> rejected_player_list = new ArrayList<>();
         List<Player> rejected_players_list = return_rejected_player_list(player_list, accepted_player_list);
         try {
-        writeRowsToCsv(csv_output, accepted_player_list);
+        writeRowsToCsv(csv_output, accepted_player_list, mappingStrategy);
         } catch (Exception e) {
         	System.out.println("Something went wrong.");
         }
@@ -166,22 +193,14 @@ public class Graphing extends Arrange {
 //        System.out.println("TEST " + stronglyConnectedSubgraphs.toString().replaceAll("[()]", "_"));
 
 	}
-	private static void writeRowsToCsv(String output_filename, List<Player> rows)
+	
+	private static void writeRowsToCsv(String output_filename, List<Player> rows, HeaderColumnNameTranslateMappingStrategy mappingStrategy)
 	        throws IOException, CsvDataTypeMismatchException, CsvRequiredFieldEmptyException {
 		Writer writer = new FileWriter(output_filename);
-//	    StringWriter writer = new StringWriter();
-//		writer.append("username,name,genderpref,gender,age,maxage,minage,interests,twotruthsonelie,introduction,religion");
-//	    ColumnPositionMappingStrategy mappingStrategy =
-//	            new ColumnPositionMappingStrategy();
 	    
-	    final List<String> order = List.of("username","name","genderpref","gender","age","maxage","minage","interests","twotruthsonelie","introduction","religion");
-	    final FixedOrderComparator comparator = new FixedOrderComparator(order);
-	    HeaderColumnNameMappingStrategy mappingStrategy = new HeaderColumnNameMappingStrategy();
+//	    final List<String> order = List.of("username","name","genderpref","gender","age","maxage","minage","interests","twotruthsonelie","introduction","religion");
+//	    final FixedOrderComparator comparator = new FixedOrderComparator(order);
 	    
-	    mappingStrategy.setType(Player.class);
-//	    mappingStrategy.setColumnOrderOnWrite(comparator); //NEED TO FIX TMRW
-	    
-
 	    StatefulBeanToCsvBuilder<Player> builder = new StatefulBeanToCsvBuilder(writer);
 	    StatefulBeanToCsv beanWriter = builder
 	              .withMappingStrategy(mappingStrategy)

@@ -19,6 +19,10 @@ import org.jgrapht.alg.shortestpath.AllDirectedPaths;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 
+import com.opencsv.CSVWriter;
+import com.opencsv.bean.HeaderColumnNameTranslateMappingStrategy;
+import com.opencsv.bean.StatefulBeanToCsv;
+
 public class Arrange {
 	public static boolean is_gender_pref_respected (Player player_being_checked, Player other_player) {
 		boolean gender_pref_is_respected;
@@ -62,6 +66,28 @@ public class Arrange {
 		return age_prefs_are_respected;
 	}
 	
+	public static boolean is_religion_pref_respected (Player player_being_checked, Player other_player) {
+		boolean religion_pref_is_respected;
+		String religionqn_player_being_checked = player_being_checked.getReligionqn();
+		System.out.println("Religion Qn of " + player_being_checked.getUsername() + " -> " + other_player.getUsername() + ": "  + religionqn_player_being_checked); //TESTT
+		if (religionqn_player_being_checked == "no") {
+			religion_pref_is_respected = true;
+		} else {
+			religion_pref_is_respected = Objects.equals(player_being_checked.getReligion(), other_player.getReligion());
+		}
+		System.out.println("Is religion pref respected: "  + religion_pref_is_respected); //TESTT
+		return religion_pref_is_respected;
+		}
+	
+	public static boolean are_religion_prefs_respected (Player player_being_checked, Player other_player) {
+		boolean religion_prefs_are_respected;
+		
+		religion_prefs_are_respected = is_religion_pref_respected(player_being_checked, other_player)&&
+				is_religion_pref_respected(other_player, player_being_checked);
+		System.out.println("Religion Prefs ARE respected: " + religion_prefs_are_respected); //TESTT
+		return religion_prefs_are_respected;
+	}
+	
 	public static boolean is_there_edge_between_players (Player angel_player, Player mortal_player) {
 		boolean final_check;
 		System.out.println("Checking " + angel_player.getUsername() + " and " + mortal_player.getUsername());
@@ -76,7 +102,11 @@ public class Arrange {
 		age_pref_check = are_age_prefs_respected(angel_player, mortal_player);
 		System.out.println("Age pref check: " + age_pref_check);
 		
-		if (gender_pref_check && age_pref_check  == true) {
+		boolean religion_pref_check;
+		religion_pref_check = are_religion_prefs_respected(angel_player, mortal_player);
+		System.out.println("Religion pref check: " + religion_pref_check);
+		
+		if (gender_pref_check && age_pref_check && religion_pref_check  == true) {
 			System.out.println("Edge found btwn " + angel_player.getUsername() + " and " + mortal_player.getUsername());
 			final_check = true;
 			return final_check;
@@ -105,17 +135,18 @@ public class Arrange {
 	
 	public static List<Graph<Player, DefaultEdge>> remove_graphs_with_no_hamilton_cycle (List<Graph<Player, DefaultEdge>> stronglyConnectedSubgraphs) {
 		boolean there_is_definitely_no_hamilton_cycle = false;
+		List<Graph<Player, DefaultEdge>> final_accepted_graphs_list = new ArrayList<>();
+		List<Graph<Player, DefaultEdge>> graphsToRemove = new ArrayList<>();
 		for (Graph<Player, DefaultEdge> g : stronglyConnectedSubgraphs) {
         	for (Player p : g.vertexSet()) {
         		if (Graphs.neighborListOf(g, p).size() <=1) {
         			there_is_definitely_no_hamilton_cycle = true;
+        			graphsToRemove.add(g);
         		}
         	}
-			if (there_is_definitely_no_hamilton_cycle == true) {
-				stronglyConnectedSubgraphs.remove(g);
-			}
         }
-		return stronglyConnectedSubgraphs;
+		final_accepted_graphs_list = return_accepted_graphs_list(stronglyConnectedSubgraphs, graphsToRemove);
+		return final_accepted_graphs_list;
 	}
 	
 	public static Map<Integer, GraphPath<Player, DefaultEdge>> find_greatest_path_of_all_vertexes(Graph<Player, DefaultEdge> G, Integer maxlimit) throws NoSuchElementException {
@@ -155,7 +186,15 @@ public class Arrange {
         System.out.println("Rejected players list: " + rejected_players_list);
         return rejected_player_list;
 	}
-	
+	public static List<Graph<Player, DefaultEdge>> return_accepted_graphs_list(List<Graph<Player, DefaultEdge>> list_to_keep, List<Graph<Player, DefaultEdge>> list_to_remove) {
+		List<Graph<Player, DefaultEdge>> accepted_graph_list = new ArrayList<>();
+		accepted_graph_list = list_to_keep.stream()
+        		.filter(e -> !list_to_remove.contains(e))
+        		.collect(Collectors.toList());
+        System.out.println("\nAccepted graphs list: " + accepted_graph_list + "\n");
+        return accepted_graph_list;
+	}
+}
 //	public static calcDepths(g) {    //NOT USED, DOES NOT WORK
 //
 //	    Map<Player, Integer> vertexToDepthMap = new HashMap<>();
@@ -172,7 +211,7 @@ public class Arrange {
 //	    		);
 //	    return vertexToDepthMap;
 //	}
-}
+
 
 class Pair<L, R> {
 
@@ -202,3 +241,21 @@ class Pair<L, R> {
 	  }
 
 	}
+
+class CustomStrategy<T> extends HeaderColumnNameTranslateMappingStrategy {
+
+    @Override
+    public void setColumnMapping(Map columnMapping) {
+        super.setColumnMapping(columnMapping);
+        String[] header = new String[columnMapping.size()];
+        int i = 0;
+        for (Map.Entry<String, String> entry : (List<Map.Entry>) columnMapping.entrySet()) {
+            header[i] = ((String) entry.getKey()).toUpperCase();
+            i++;
+        }
+    }
+
+     public String[] generateHeader() {
+         return header;
+     }
+   }

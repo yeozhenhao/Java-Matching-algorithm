@@ -8,28 +8,30 @@ import com.opencsv.bean.CsvBindByName;
 public class Player implements Serializable {
 	// Instance Variables
 	// Not setting @ e.g. @CsvBindByName will make all @CsvBindByName by default. Columns must be named same as the variables
-	@CsvBindByName
+	@CsvBindByName(column = "Telegram Username", required = true) //required: Whether or not the annotated field is required to be present in every data set of the input.
 	public String username;
-	@CsvBindByName
+	@CsvBindByName(column = "Name", required = true)
 	public String name;
-	@CsvBindByName
+	@CsvBindByName(column = "Genderpref", required = true)
 	public String genderpref;
-	@CsvBindByName
+	@CsvBindByName(column = "Gender", required = true)
 	public String gender;
-	@CsvBindByName
+	@CsvBindByName(column = "Age", required = true)
 	public int age;
-	@CsvBindByName
+	@CsvBindByName(column = "Maxage", required = true)
 	public int maxage;
-	@CsvBindByName
+	@CsvBindByName(column = "Minage", required = true)
 	public int minage;
-	@CsvBindByName
+	@CsvBindByName(column = "Interests", required = true)
 	public String interests;
-	@CsvBindByName
+	@CsvBindByName(column = "Twotruthsonelie", required = true)
 	public String twotruthsonelie;
-	@CsvBindByName
+	@CsvBindByName(column = "Intro", required = true)
 	public String introduction;
-	
+	@CsvBindByName(column = "Religion", required = true)
 	public String religion;
+	@CsvBindByName(column = "Religionqn", required = true)
+	public String religionqn;
 	
 	
 	public void setUsername(String username) {
@@ -64,6 +66,9 @@ public class Player implements Serializable {
 	}
 	public void setReligion(String religion) {
 		this.religion = religion;
+	}
+	public void setReligionqn(String religionqn) {
+		this.religionqn = religionqn;
 	}
 	
 	public String getUsername()
@@ -111,6 +116,11 @@ public class Player implements Serializable {
 		return religion.toLowerCase();
 		}
 	
+	public String getReligionqn()
+	{
+		return religionqn.toLowerCase();
+		}
+	
 	//Constructor Declaration of Class
 	public Player()
 			{}
@@ -144,10 +154,12 @@ public class Player implements Serializable {
 	@Override
 	public String toString()
 	{
-		return "Player [Username=" + username + ", Name=" + name + ", Genderpref=" + genderpref
-				+ ", Gender=" + gender + ", Age=" + age + ", Maxage=" + maxage + ", Minage=" + minage
-				+ ", Interests=" + interests + ", Twotruthsonelie=" + twotruthsonelie + ", Intro=" + introduction
-				+ ", Religion=" + religion + "]";
+		return username; //Removed "Player [Username=" +  
+//				+ ", Name=" + name + ", Genderpref=" + genderpref
+//				+ ", Gender=" + gender + ", Age=" + age + ", Maxage=" + maxage + ", Minage=" + minage
+//				+ ", Interests=" + interests + ", Twotruthsonelie=" + twotruthsonelie + ", Intro=" + introduction
+//				+ ", Religion=" + religion + ", Religion Qn=" + religionqn 
+//				+ "]";
 	}
 	
 	
@@ -156,6 +168,10 @@ public class Player implements Serializable {
 		is_equal = Objects.equals(this.getUsername(), other_player.getUsername());
 		return is_equal;
 	}
+	
+	
+	
+	
 	
 	
 }
