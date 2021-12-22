@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
+import java.util.Stack;
 
 import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
@@ -196,7 +197,45 @@ public class Arrange {
         System.out.println("\nAccepted graphs list: " + accepted_graph_list + "\n");
         return accepted_graph_list;
 	}
-}
+	
+	public static void dfsWithoutRecursion (Graph<Player, DefaultEdge> G) {
+	    Stack<Graph<Player,DefaultEdge>> stack_graph = new Stack<>();
+	    Stack<List<Player>> stack_path = new Stack<>();
+	    List<Player> graph_path = new ArrayList<>();
+	    List<Player> listOfNodes = new ArrayList<>();
+	    List<Player> start = new ArrayList<>();
+	    listOfNodes = List.copyOf(G.vertexSet());
+	    start.add(listOfNodes.get(0));
+	    System.out.println("\nList of Nodes: " + listOfNodes + "\n");
+	    System.out.println("\nStart Node: " + start + "\n");
+	    
+//	    boolean[] isVisited = new boolean[G.vertexSet().size()];
+	    stack_graph.push(G);
+	    stack_path.push(start);
+	    System.out.println("\nLast item in  list of nodes: " + listOfNodes.get(listOfNodes.size()-1) + "\n");
+	    while (!stack_path.isEmpty()) {
+	        Graph<Player, DefaultEdge> current_graph = stack_graph.pop();
+	        List<Player> current_path = stack_path.pop();
+	        List<Player> listOfNeighbours = new ArrayList<>();
+	        Player last_player =  (Player) current_path.get(current_path.size()-1);
+		    listOfNeighbours = Graphs.neighborListOf(G, last_player);
+		    System.out.println("\nNeighbours list of last node " + last_player + " in G: " + listOfNeighbours + "\n");}
+	        for (Player neighbour : listOfNeighbours) {
+	        	List<Player> conf_p = new ArrayList<>();
+	        	conf_p = current_path;
+	        	
+	        }
+//	        if(!isVisited[path.get(-1)]){
+//	            isVisited[current] = true;
+//	            visit(current);
+//	            for (int dest : adjVertices.get(current)) {
+//	                if (!isVisited[dest])
+//	                    stack.push(dest);
+//	            }
+//	    }
+	}
+	}
+//}
 //	public static calcDepths(g) {    //NOT USED, DOES NOT WORK
 //
 //	    Map<Player, Integer> vertexToDepthMap = new HashMap<>();

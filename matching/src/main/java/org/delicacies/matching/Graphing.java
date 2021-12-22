@@ -148,15 +148,15 @@ public class Graphing extends Arrange {
 //            }
 //        }
         
-        Map<Integer, Set<Player>> largestVertexGraphMap = new HashMap<>();
+        Map<Integer, Graph<Player, DefaultEdge>> largestVertexGraphMap = new HashMap<>();
         for (int index = 0; index < new_list_stronglyConnectedSubgraphs.size(); index++) {
  
         		System.out.println("\nIndex " + index + " with graph: " + new_list_stronglyConnectedSubgraphs.get(index));
         		Graph<Player, DefaultEdge> directedGraph_01 = new DefaultDirectedGraph<Player, DefaultEdge>(DefaultEdge.class);
         		directedGraph_01 = new_list_stronglyConnectedSubgraphs.get(index);
         		System.out.println("Graph size: " + directedGraph_01.vertexSet().size());
-        		System.out.println("Graph vertex set: " + directedGraph_01.vertexSet());
-        		largestVertexGraphMap.put(directedGraph_01.vertexSet().size(), directedGraph_01.vertexSet());
+        		System.out.println("Graph: " + directedGraph_01);
+        		largestVertexGraphMap.put(directedGraph_01.vertexSet().size(), directedGraph_01);
             }
         
         //Find Hamiltonian path 
@@ -170,8 +170,10 @@ public class Graphing extends Arrange {
 //        
         int maxKeyValueInMap = Collections.max(largestVertexGraphMap.keySet());
         System.out.println("Max Key Value In Map: " + maxKeyValueInMap + "\n");
-
-        
+        Graph<Player, DefaultEdge> directedGraph_02 = new DefaultDirectedGraph<Player, DefaultEdge>(DefaultEdge.class);
+        directedGraph_02 = largestVertexGraphMap.get(maxKeyValueInMap);
+        System.out.println("Graph in maxKey: " + directedGraph_02 + "\n");
+        dfsWithoutRecursion(directedGraph_02);
 //        List<Player> accepted_player_list = new ArrayList<>();
 //        accepted_player_list = largestVertexGraphMap.get(maxKeyValueInMap);
 //        List<Player> rejected_player_list = new ArrayList<>();
