@@ -3,6 +3,7 @@ package org.delicacies.matching;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.io.FileNotFoundException;
@@ -26,6 +27,7 @@ import org.jgrapht.alg.connectivity.*;
 import org.jgrapht.alg.interfaces.ShortestPathAlgorithm.*;
 import org.jgrapht.alg.interfaces.*;
 import org.jgrapht.alg.shortestpath.*;
+import org.jgrapht.alg.tour.TwoApproxMetricTSP;
 import org.jgrapht.graph.*;
 
 import com.opencsv.CSVReader;
@@ -93,26 +95,14 @@ public class Graphing extends Arrange {
 		
 
 		
-		
-//		Player player1 = new Player("yeozhenhao","Elgene","Female","Male",20,20,20,"test1","test1","test1","test1");
-//		Player player2 = new Player("matt","Matthew","Female","Male",20,20,20,"test1","test1","test1","test1");
-//		Player player3 = new Player("kiahui","Kia","Male","Male",20,20,20,"test1","test1","test1","test1");
-//		Player player4 = new Player("ade","Ade","Male","Female",20,20,20,"test1","test1","test1","test1");
-//		
-//		ArrayList<Player> player_list = new ArrayList<>();
-//		player_list.add(player1);
-//		player_list.add(player2);
-//		player_list.add(player3);
-//		player_list.add(player4);
-		
 		Graph<Player, DefaultEdge> directedGraph =
 	            new DefaultDirectedGraph<Player, DefaultEdge>(DefaultEdge.class);
 		for (Player p : player_list) {
 			directedGraph.addVertex(p);
 		}
-		for (Player v : directedGraph.vertexSet()) {
-			System.out.println("vertex: " + v.getUsername());
-		}
+//		for (Player v : directedGraph.vertexSet()) {
+//			System.out.println("vertex: " + v.getUsername());
+//		}
 		
 		
 		List<Pair> listOfPair = new ArrayList<>();
@@ -145,35 +135,53 @@ public class Graphing extends Arrange {
         
         
         
-        Map<Integer, GraphPath<Player, DefaultEdge>> longestpathMap = new HashMap<Integer, GraphPath<Player, DefaultEdge>>();
+//        ONLY USE THE BELOW FUNCTION IF YOU WANT TO FIND OUT which person to start & end with to get the maximum path but this is pretty useless!
+//        Map<Integer, GraphPath<Player, DefaultEdge>> longestpathMap = new HashMap<Integer, GraphPath<Player, DefaultEdge>>();
+//        for (int index = 0; index < new_list_stronglyConnectedSubgraphs.size(); index++) {
+//        	try {
+//        		System.out.println("\nIndex " + index + " with graph: " + new_list_stronglyConnectedSubgraphs.get(index));
+//            	longestpathMap = find_greatest_path_of_all_vertexes(new_list_stronglyConnectedSubgraphs.get(index), maxlimit);
+//            }	catch (NoSuchElementException NSEe) {
+//            	NSEe.printStackTrace();
+//            	maxlimit++;
+//            	longestpathMap = find_greatest_path_of_all_vertexes(new_list_stronglyConnectedSubgraphs.get(index), maxlimit);
+//            }
+//        }
+        
+        Map<Integer, Set<Player>> largestVertexGraphMap = new HashMap<>();
         for (int index = 0; index < new_list_stronglyConnectedSubgraphs.size(); index++) {
-        	try {
+ 
         		System.out.println("\nIndex " + index + " with graph: " + new_list_stronglyConnectedSubgraphs.get(index));
-            	longestpathMap = find_greatest_path_of_all_vertexes(new_list_stronglyConnectedSubgraphs.get(index), maxlimit);
-            }	catch (NoSuchElementException NSEe) {
-            	NSEe.printStackTrace();
-            	maxlimit++;
-            	longestpathMap = find_greatest_path_of_all_vertexes(new_list_stronglyConnectedSubgraphs.get(index), maxlimit);
+        		Graph<Player, DefaultEdge> directedGraph_01 = new DefaultDirectedGraph<Player, DefaultEdge>(DefaultEdge.class);
+        		directedGraph_01 = new_list_stronglyConnectedSubgraphs.get(index);
+        		System.out.println("Graph size: " + directedGraph_01.vertexSet().size());
+        		System.out.println("Graph vertex set: " + directedGraph_01.vertexSet());
+        		largestVertexGraphMap.put(directedGraph_01.vertexSet().size(), directedGraph_01.vertexSet());
             }
-        }
         
-        int maxValueInMap = Collections.max(longestpathMap.keySet());
-//        System.out.println("Max Value In Map: " + longestpathMap + "\n");
+        //Find Hamiltonian path 
+//        System.out.println("Shortest path from i to c:");
+//        TwoApproxMetricTSP<Player,DefaultEdge> TSPclass = new HamiltonianCycleAlgorithmBase()<>();
+//        TSPclas
+//        
+//        DijkstraShortestPath<String, DefaultEdge> dijkstraAlg = new DijkstraShortestPath<>(directedGraph);
+//        SingleSourcePaths<String, DefaultEdge> iPaths = dijkstraAlg.getPaths("i");
+//        System.out.println(iPaths.getPath("c") + "\n");
+//        
+        int maxKeyValueInMap = Collections.max(largestVertexGraphMap.keySet());
+        System.out.println("Max Key Value In Map: " + maxKeyValueInMap + "\n");
+
         
-        System.out.println("Max Value In Map: " + maxValueInMap);
-        //System.out.println("Longest Path: " + longestpathMap.get(maxValueInMap).get); Not used - prints out too many details        
-        System.out.println("Accepted Player List " + longestpathMap.get(maxValueInMap).getVertexList());
-        
-        List<Player> accepted_player_list = new ArrayList<>();
-        accepted_player_list = longestpathMap.get(maxValueInMap).getVertexList();
-        List<Player> rejected_player_list = new ArrayList<>();
-        List<Player> rejected_players_list = return_rejected_player_list(player_list, accepted_player_list);
-        try {
-        writeRowsToCsv(csv_output, accepted_player_list, mappingStrategy);
-        } catch (Exception e) {
-        	System.out.println("Something went wrong.");
-        }
-        System.out.println("\n~~CSV printed!!~~");
+//        List<Player> accepted_player_list = new ArrayList<>();
+//        accepted_player_list = largestVertexGraphMap.get(maxKeyValueInMap);
+//        List<Player> rejected_player_list = new ArrayList<>();
+//        List<Player> rejected_players_list = return_rejected_player_list(player_list, accepted_player_list);
+//        try {
+//        writeRowsToCsv(csv_output, accepted_player_list, mappingStrategy);
+//        } catch (Exception e) {
+//        	System.out.println("Something went wrong.");
+//        }
+//        System.out.println("\n~~CSV printed!!~~");
 
         
 

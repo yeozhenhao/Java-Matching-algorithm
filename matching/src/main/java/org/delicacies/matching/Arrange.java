@@ -16,6 +16,7 @@ import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
 import org.jgrapht.Graphs;
 import org.jgrapht.alg.shortestpath.AllDirectedPaths;
+import org.jgrapht.alg.tour.TwoApproxMetricTSP;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 
@@ -126,7 +127,7 @@ public class Arrange {
 					if (is_there_edge_between_players(player, other_player) == true) {
 						Pair<Player,Player> pair_edges = new Pair<> (player, other_player);
 						player_edges.add(pair_edges);
-						} 
+						}
 					}
 				}
 			}
@@ -178,6 +179,7 @@ public class Arrange {
 		}
 		return longestpathMap;
 	}
+	
 	public static List<Player> return_rejected_player_list(List<Player> player_list, List<Player> accepted_player_list) {
         List<Player> rejected_player_list = new ArrayList<>();
         List<Player> rejected_players_list = player_list.stream()
@@ -241,21 +243,3 @@ class Pair<L, R> {
 	  }
 
 	}
-
-class CustomStrategy<T> extends HeaderColumnNameTranslateMappingStrategy {
-
-    @Override
-    public void setColumnMapping(Map columnMapping) {
-        super.setColumnMapping(columnMapping);
-        String[] header = new String[columnMapping.size()];
-        int i = 0;
-        for (Map.Entry<String, String> entry : (List<Map.Entry>) columnMapping.entrySet()) {
-            header[i] = ((String) entry.getKey()).toUpperCase();
-            i++;
-        }
-    }
-
-     public String[] generateHeader() {
-         return header;
-     }
-   }
