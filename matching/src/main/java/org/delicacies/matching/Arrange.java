@@ -74,13 +74,13 @@ public class Arrange {
 	public static boolean is_religion_pref_respected (Player player_being_checked, Player other_player) {
 		boolean religion_pref_is_respected;
 		String religionqn_player_being_checked = player_being_checked.getReligionqn();
-		System.out.println("Religion Qn of " + player_being_checked.getUsername() + " -> " + other_player.getUsername() + ": "  + religionqn_player_being_checked); //TESTT
+//		System.out.println("Religion Qn of " + player_being_checked.getUsername() + " -> " + other_player.getUsername() + ": "  + religionqn_player_being_checked); //TESTT
 		if (Objects.equals("no", religionqn_player_being_checked)) {
 			religion_pref_is_respected = true;
 		} else {
 			religion_pref_is_respected = Objects.equals(player_being_checked.getReligion(), other_player.getReligion());
 		}
-		System.out.println("Is religion pref respected: "  + religion_pref_is_respected); //TESTT
+//		System.out.println("Is religion pref respected: "  + religion_pref_is_respected); //TESTT
 		return religion_pref_is_respected;
 		}
 	
@@ -89,35 +89,35 @@ public class Arrange {
 		
 		religion_prefs_are_respected = is_religion_pref_respected(player_being_checked, other_player)&&
 				is_religion_pref_respected(other_player, player_being_checked);
-		System.out.println("Religion Prefs ARE respected: " + religion_prefs_are_respected); //TESTT
+//		System.out.println("Religion Prefs ARE respected: " + religion_prefs_are_respected); //TESTT
 		return religion_prefs_are_respected;
 	}
 	
 	public static boolean is_there_edge_between_players (Player angel_player, Player mortal_player) {
 		boolean final_check;
-		System.out.println("Checking " + angel_player.getUsername() + " and " + mortal_player.getUsername());
+//		System.out.println("Checking " + angel_player.getUsername() + " and " + mortal_player.getUsername());
 		
 		boolean there_is_edge_between_players;
 		
 		boolean gender_pref_check;
 		gender_pref_check = are_gender_prefs_respected(angel_player, mortal_player);
-		System.out.println("Gender pref check: " + gender_pref_check);
+//		System.out.println("Gender pref check: " + gender_pref_check);
 		
 		boolean age_pref_check;
 		age_pref_check = are_age_prefs_respected(angel_player, mortal_player);
-		System.out.println("Age pref check: " + age_pref_check);
+//		System.out.println("Age pref check: " + age_pref_check);
 		
 		boolean religion_pref_check;
 		religion_pref_check = are_religion_prefs_respected(angel_player, mortal_player);
-		System.out.println("Religion pref check: " + religion_pref_check);
+//		System.out.println("Religion pref check: " + religion_pref_check);
 		
 		if (gender_pref_check && age_pref_check && religion_pref_check  == true) {
-			System.out.println("Edge found btwn " + angel_player.getUsername() + " and " + mortal_player.getUsername());
+//			System.out.println("Edge found btwn " + angel_player.getUsername() + " and " + mortal_player.getUsername());
 			final_check = true;
 			return final_check;
 		}
 		else {
-			System.out.println("No edge between " + angel_player.getUsername() + " and " + mortal_player.getUsername());
+//			System.out.println("No edge between " + angel_player.getUsername() + " and " + mortal_player.getUsername());
 			final_check = false;
 			return final_check;
 		}
@@ -139,13 +139,13 @@ public class Arrange {
 		}
 	
 	public static List<Graph<Player, DefaultEdge>> remove_graphs_with_no_hamilton_cycle (List<Graph<Player, DefaultEdge>> stronglyConnectedSubgraphs) {
-		boolean there_is_definitely_no_hamilton_cycle = false;
+//		boolean there_is_definitely_no_hamilton_cycle = false;
 		List<Graph<Player, DefaultEdge>> final_accepted_graphs_list = new ArrayList<>();
 		List<Graph<Player, DefaultEdge>> graphsToRemove = new ArrayList<>();
 		for (Graph<Player, DefaultEdge> g : stronglyConnectedSubgraphs) {
         	for (Player p : g.vertexSet()) {
         		if (Graphs.neighborListOf(g, p).size() <=1) {
-        			there_is_definitely_no_hamilton_cycle = true;
+//        			there_is_definitely_no_hamilton_cycle = true;
         			graphsToRemove.add(g);
         		}
         	}
@@ -154,7 +154,7 @@ public class Arrange {
 		return final_accepted_graphs_list;
 	}
 	
-	public static Map<Integer, GraphPath<Player, DefaultEdge>> find_greatest_path_of_all_vertexes(Graph<Player, DefaultEdge> G, Integer maxlimit) throws NoSuchElementException {
+	public static Map<Integer, GraphPath<Player, DefaultEdge>> find_greatest_path_of_all_vertexes(Graph<Player, DefaultEdge> G, Integer maxlimit) throws NoSuchElementException { //NOT USED ANYMORE - Brute force method does not work for graphs with >10 vertices
 		AllDirectedPaths<Player, DefaultEdge> paths = new AllDirectedPaths<Player, DefaultEdge>(G);
 		Map<Integer, GraphPath<Player, DefaultEdge>> longestpathMap = new HashMap<>();
 		for (Player player : G.vertexSet()) {
@@ -200,7 +200,9 @@ public class Arrange {
         return accepted_graph_list;
 	}
 	
-	public static List<Player> dfsWithoutRecursion (Graph<Player, DefaultEdge> G, int length_of_paths_considered_complete) {
+	public static List<Player> dfsWithoutRecursion (Graph<Player, DefaultEdge> G, int length_of_paths_considered_complete, int stack_path_clearing_divisor_number) {
+		boolean path_list_found = false;
+		
 		int max_possible_path_length = G.vertexSet().size();
 		Random rand = new Random();
 		int random_start_node_number = rand.nextInt(G.vertexSet().size() - 1);
@@ -208,63 +210,68 @@ public class Arrange {
 		Stack<Graph<Player,DefaultEdge>> stack_graph = new Stack<>();
 	    Stack<List<Player>> stack_path = new Stack<>();
 	    List<Player> graph_path = new ArrayList<>();
-	    List<Player> listOfNodes = new ArrayList<>();
 	    List<Player> start = new ArrayList<>();
-	    listOfNodes = List.copyOf(G.vertexSet());
+	    List<Player> listOfNodes = List.copyOf(G.vertexSet());
 	    start.add(listOfNodes.get(random_start_node_number)); //Choose a randomly generated start node
-	    System.out.println("\nList of Nodes: " + listOfNodes);
-	    System.out.println("Start Node: " + start + "\n");
+//	    System.out.println("\nList of Nodes: " + listOfNodes);
+//	    System.out.println("Start Node: " + start + "\n");
 	    
-//	    boolean[] isVisited = new boolean[G.vertexSet().size()];
 	    stack_graph.push(G);
 	    stack_path.push(start);
+	    
+	    
 	    while (!stack_path.isEmpty()) {
-	    	System.out.println("\nRESET ==================================");
+//	    	System.out.println("\nRESET ==================================");
+	    	Stack<List<Player>> stack_path_reset = new Stack<>();
+	    	Stack<Graph<Player,DefaultEdge>> stack_graph_reset = new Stack<>();
+	    	
 	        Graph<Player, DefaultEdge> current_graph = new DefaultDirectedGraph<Player, DefaultEdge>(DefaultEdge.class);
 	        Graphs.addGraph(current_graph, stack_graph.pop());
 	        List<Player> current_path = List.copyOf(stack_path.pop()); // Makes a copy, forming an immutable List
 	        Player last_player_in_path =  (Player) current_path.get(current_path.size()-1);
-	        List<Player> listOfNeighbours = Graphs.neighborListOf(current_graph, last_player_in_path);
-		    List<Player> listOfNeighbours_removed_duplicates = clearListFromDuplicateFirstName(listOfNeighbours);
-		    System.out.println("\ncurrent_path " + current_path);
-		    System.out.println("\ncurrent_graph " + current_graph);
-		    System.out.println("Neighbours list of last node in path (" + last_player_in_path + ") in G: " + listOfNeighbours_removed_duplicates + "\n");
+	        List<Player> listOfNeighbours_removed_duplicates = clearListFromDuplicateFirstName(Graphs.neighborListOf(current_graph, last_player_in_path));
+//		    System.out.println("\ncurrent_path " + current_path);
+//		    System.out.println("\ncurrent_graph " + current_graph);
+//		    System.out.println("Neighbours list of last node in path (" + last_player_in_path + ") in G: " + listOfNeighbours_removed_duplicates + "\n");
 	        for (Player neighbour : listOfNeighbours_removed_duplicates) {
-	        	System.out.println("\nNEW ROUND ==================================");
+//	        	System.out.println("\nNEW ROUND ==================================");
 	        	List<Player> conf_p = new ArrayList<>();
 	        	conf_p.addAll(current_path); //Make a copy of the immutable List into a mutable List
-	        	System.out.println("\ncurrent path " + current_path);
-	        	System.out.println("\ncurrent graph " + current_graph);
+//	        	System.out.println("\ncurrent path " + current_path);
+//	        	System.out.println("\ncurrent graph " + current_graph);
 	        	conf_p.add(neighbour);
-	        	System.out.println("\nAdded " + neighbour + " to conf_p, now conf_p is " + conf_p);
+//	        	System.out.println("\nAdded " + neighbour + " to conf_p, now conf_p is " + conf_p);
 
 	        	Graph<Player, DefaultEdge> conf_g = new DefaultDirectedGraph<Player, DefaultEdge>(DefaultEdge.class);
 	        	Graphs.addGraph(conf_g, current_graph);
 	        	conf_g.removeVertex(last_player_in_path); //remove the node that we just used to find neighbours for
-	        	System.out.println("\nRemoving " + last_player_in_path + " from conf_g");
-	        	stack_graph.push(conf_g);
-	        	stack_path.push(conf_p);
+//	        	System.out.println("\nRemoving " + last_player_in_path + " from conf_g");
+	        	stack_path_reset.push(conf_p);
+	        	stack_graph_reset.push(conf_g);
 	        }
-	        for (List<Player> p_list : stack_path) {
-	        	System.out.println("\nList length: " + p_list.size());
+	        for (List<Player> p_list : stack_path_reset) {
+//	        	System.out.println("\nList length: " + p_list.size());
 	        	if (p_list.size() == length_of_paths_considered_complete) {
+	        		path_list_found = true;
 	        		return p_list;
 	        	} else {
-		        	int path_length = p_list.size();
-		        	System.out.println("\nPath length (progress): " + path_length + " / " + max_possible_path_length);
+	        		int path_length = p_list.size();
+	        		System.out.println("\nPath length (progress): " + path_length + " / " + max_possible_path_length);
 	        	}
+//        	System.out.println("\nTarget: " + length_of_paths_considered_complete);
+	        if (path_list_found == false) {
+	        	stack_path.addAll(stack_path_reset);
+	        	stack_graph.addAll(stack_graph_reset);
+	        	}
+	        for (int i = 0; i < Math.floor(stack_path.size()/stack_path_clearing_divisor_number); i++) {
+	        	stack_path.remove(i);
+	        	stack_graph.remove(i);
+	        }
+	        System.out.println("\nDeleted first couple elements to save space, stack_path size is now: " + stack_path.size());
 	        }
 	    }
 		return null;
 	}
-//	        if(!isVisited[path.get(-1)]){
-//	            isVisited[current] = true;
-//	            visit(current);
-//	            for (int dest : adjVertices.get(current)) {
-//	                if (!isVisited[dest])
-//	                    stack.push(dest);
-//	            }
-//	    }
 
 	private static List<Player> clearListFromDuplicateFirstName(List<Player> list1) {
 
@@ -275,24 +282,7 @@ public class Arrange {
 	     List<Player> list = new ArrayList<Player>(cleanMap.values());
 	     return list;
 	}
-	}
-//}
-//	public static calcDepths(g) {    //NOT USED, DOES NOT WORK
-//
-//	    Map<Player, Integer> vertexToDepthMap = new HashMap<>();
-//	    Iterator<Player> iterator = new TopologicalOrderIterator<Player, DefaultEdge>(g);
-//	    iterator.forEachRemaining( 
-//	    		v -> {
-//	    			Set<Player> predecessors = Graphs.predecessorListOf(g, v).toSet();
-//	    			int maxPredecessorDepth = -1;
-//	    			predecessors.forEach(predecessor -> 
-//	    				maxPredecessorDepth = Math.max(maxPredecessorDepth, vertexToDepthMap.get(predecessor))
-//	    			);
-//            vertexToDepthMap.put(v, maxPredecessorDepth + 1);
-//            }
-//	    		);
-//	    return vertexToDepthMap;
-//	}
+}
 
 
 class Pair<L, R> {
