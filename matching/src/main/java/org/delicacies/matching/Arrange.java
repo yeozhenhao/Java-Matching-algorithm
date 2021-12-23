@@ -7,9 +7,12 @@ import java.util.stream.Collectors;
 import java.util.NoSuchElementException;
 import java.time.temporal.ValueRange;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Objects;
+import java.util.Random;
 import java.util.Set;
 import java.util.Stack;
 
@@ -29,7 +32,7 @@ public class Arrange {
 	public static boolean is_gender_pref_respected (Player player_being_checked, Player other_player) {
 		boolean gender_pref_is_respected;
 		
-		if (player_being_checked.getGenderpref() == "no preference") {
+		if (Objects.equals("no preference", player_being_checked.getGenderpref())) {
 			gender_pref_is_respected = true;
 		} else {
 			gender_pref_is_respected = Objects.equals(player_being_checked.getGenderpref(), other_player.getGender());
@@ -72,7 +75,7 @@ public class Arrange {
 		boolean religion_pref_is_respected;
 		String religionqn_player_being_checked = player_being_checked.getReligionqn();
 		System.out.println("Religion Qn of " + player_being_checked.getUsername() + " -> " + other_player.getUsername() + ": "  + religionqn_player_being_checked); //TESTT
-		if (religionqn_player_being_checked == "no") {
+		if (Objects.equals("no", religionqn_player_being_checked)) {
 			religion_pref_is_respected = true;
 		} else {
 			religion_pref_is_respected = Objects.equals(player_being_checked.getReligion(), other_player.getReligion());
@@ -182,11 +185,10 @@ public class Arrange {
 	}
 	
 	public static List<Player> return_rejected_player_list(List<Player> player_list, List<Player> accepted_player_list) {
-        List<Player> rejected_player_list = new ArrayList<>();
-        List<Player> rejected_players_list = player_list.stream()
+        List<Player> rejected_player_list = player_list.stream()
         		.filter(e -> !accepted_player_list.contains(e))
         		.collect(Collectors.toList());
-        System.out.println("Rejected players list: " + rejected_players_list);
+        System.out.println("Rejected players list: " + rejected_player_list);
         return rejected_player_list;
 	}
 	public static List<Graph<Player, DefaultEdge>> return_accepted_graphs_list(List<Graph<Player, DefaultEdge>> list_to_keep, List<Graph<Player, DefaultEdge>> list_to_remove) {
@@ -198,33 +200,63 @@ public class Arrange {
         return accepted_graph_list;
 	}
 	
-	public static void dfsWithoutRecursion (Graph<Player, DefaultEdge> G) {
-	    Stack<Graph<Player,DefaultEdge>> stack_graph = new Stack<>();
+	public static List<Player> dfsWithoutRecursion (Graph<Player, DefaultEdge> G, int length_of_paths_considered_complete) {
+		int max_possible_path_length = G.vertexSet().size();
+		Random rand = new Random();
+		int random_start_node_number = rand.nextInt(G.vertexSet().size() - 1);
+		
+		Stack<Graph<Player,DefaultEdge>> stack_graph = new Stack<>();
 	    Stack<List<Player>> stack_path = new Stack<>();
 	    List<Player> graph_path = new ArrayList<>();
 	    List<Player> listOfNodes = new ArrayList<>();
 	    List<Player> start = new ArrayList<>();
 	    listOfNodes = List.copyOf(G.vertexSet());
-	    start.add(listOfNodes.get(0));
-	    System.out.println("\nList of Nodes: " + listOfNodes + "\n");
-	    System.out.println("\nStart Node: " + start + "\n");
+	    start.add(listOfNodes.get(random_start_node_number)); //Choose a randomly generated start node
+	    System.out.println("\nList of Nodes: " + listOfNodes);
+	    System.out.println("Start Node: " + start + "\n");
 	    
 //	    boolean[] isVisited = new boolean[G.vertexSet().size()];
 	    stack_graph.push(G);
 	    stack_path.push(start);
-	    System.out.println("\nLast item in  list of nodes: " + listOfNodes.get(listOfNodes.size()-1) + "\n");
 	    while (!stack_path.isEmpty()) {
-	        Graph<Player, DefaultEdge> current_graph = stack_graph.pop();
-	        List<Player> current_path = stack_path.pop();
-	        List<Player> listOfNeighbours = new ArrayList<>();
-	        Player last_player =  (Player) current_path.get(current_path.size()-1);
-		    listOfNeighbours = Graphs.neighborListOf(G, last_player);
-		    System.out.println("\nNeighbours list of last node " + last_player + " in G: " + listOfNeighbours + "\n");}
-	        for (Player neighbour : listOfNeighbours) {
+	    	System.out.println("\nRESET ==================================");
+	        Graph<Player, DefaultEdge> current_graph = new DefaultDirectedGraph<Player, DefaultEdge>(DefaultEdge.class);
+	        Graphs.addGraph(current_graph, stack_graph.pop());
+	        List<Player> current_path = List.copyOf(stack_path.pop()); // Makes a copy, forming an immutable List
+	        Player last_player_in_path =  (Player) current_path.get(current_path.size()-1);
+	        List<Player> listOfNeighbours = Graphs.neighborListOf(current_graph, last_player_in_path);
+		    List<Player> listOfNeighbours_removed_duplicates = clearListFromDuplicateFirstName(listOfNeighbours);
+		    System.out.println("\ncurrent_path " + current_path);
+		    System.out.println("\ncurrent_graph " + current_graph);
+		    System.out.println("Neighbours list of last node in path (" + last_player_in_path + ") in G: " + listOfNeighbours_removed_duplicates + "\n");
+	        for (Player neighbour : listOfNeighbours_removed_duplicates) {
+	        	System.out.println("\nNEW ROUND ==================================");
 	        	List<Player> conf_p = new ArrayList<>();
-	        	conf_p = current_path;
-	        	
+	        	conf_p.addAll(current_path); //Make a copy of the immutable List into a mutable List
+	        	System.out.println("\ncurrent path " + current_path);
+	        	System.out.println("\ncurrent graph " + current_graph);
+	        	conf_p.add(neighbour);
+	        	System.out.println("\nAdded " + neighbour + " to conf_p, now conf_p is " + conf_p);
+
+	        	Graph<Player, DefaultEdge> conf_g = new DefaultDirectedGraph<Player, DefaultEdge>(DefaultEdge.class);
+	        	Graphs.addGraph(conf_g, current_graph);
+	        	conf_g.removeVertex(last_player_in_path); //remove the node that we just used to find neighbours for
+	        	System.out.println("\nRemoving " + last_player_in_path + " from conf_g");
+	        	stack_graph.push(conf_g);
+	        	stack_path.push(conf_p);
 	        }
+	        for (List<Player> p_list : stack_path) {
+	        	System.out.println("\nList length: " + p_list.size());
+	        	if (p_list.size() == length_of_paths_considered_complete) {
+	        		return p_list;
+	        	} else {
+		        	int path_length = p_list.size();
+		        	System.out.println("\nPath length (progress): " + path_length + " / " + max_possible_path_length);
+	        	}
+	        }
+	    }
+		return null;
+	}
 //	        if(!isVisited[path.get(-1)]){
 //	            isVisited[current] = true;
 //	            visit(current);
@@ -233,6 +265,15 @@ public class Arrange {
 //	                    stack.push(dest);
 //	            }
 //	    }
+
+	private static List<Player> clearListFromDuplicateFirstName(List<Player> list1) {
+
+	     Map<String, Player> cleanMap = new LinkedHashMap<String, Player>();
+	     for (int i = 0; i < list1.size(); i++) {
+	         cleanMap.put(list1.get(i).getUsername(), list1.get(i));
+	     }
+	     List<Player> list = new ArrayList<Player>(cleanMap.values());
+	     return list;
 	}
 	}
 //}

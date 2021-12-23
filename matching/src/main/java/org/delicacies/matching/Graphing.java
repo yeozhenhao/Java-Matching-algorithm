@@ -18,12 +18,14 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 
 import org.jgrapht.alg.interfaces.*;
 import org.apache.commons.collections.comparators.FixedOrderComparator;
 import org.jgrapht.*;
 import org.jgrapht.alg.connectivity.*;
+import org.jgrapht.alg.cycle.TarjanSimpleCycles;
 import org.jgrapht.alg.interfaces.ShortestPathAlgorithm.*;
 import org.jgrapht.alg.interfaces.*;
 import org.jgrapht.alg.shortestpath.*;
@@ -48,6 +50,7 @@ public class Graphing extends Arrange {
 	public static void main(String[] args) throws FileNotFoundException, IOException, CsvValidationException {
 		// TODO Auto-generated method stub
 		Integer maxlimit = Integer.valueOf(0); //Set max algorithm path limit (in case of high player numbers)
+		Integer length_of_paths_considered_complete = 11;
 		
 		String csv_path = "playerlist.csv";
 		String csv_output = "Accepted Players List.csv";
@@ -113,29 +116,33 @@ public class Graphing extends Arrange {
 		      directedGraph.addEdge(p.getLeft(), p.getRight());
 		    }
 		
-		// computes all the strongly connected components of the directed graph
+		// computes all the strongly connected components of the directed graph //NOT USED - algorithm too limiting
 		StrongConnectivityAlgorithm<Player, DefaultEdge> scAlg =
-	            new KosarajuStrongConnectivityInspector<>(directedGraph);
+	            new KosarajuStrongConnectivityInspector<>(directedGraph); // StrongConnectivityAlgorithm has GabowStrongConnectivityInspector or KosarajuStrongConnectivityInspector. Both seem to do the same thing.
 		List<Graph<Player, DefaultEdge>> stronglyConnectedSubgraphs =
 	            scAlg.getStronglyConnectedComponents();
 		
-		 // prints the strongly connected components //NOT DONE as it will be too long
-        System.out.println("Strongly connected components:");
-        for (int i = 0; i < stronglyConnectedSubgraphs.size(); i++) {
-            System.out.println(stronglyConnectedSubgraphs.get(i));
-        }
-        List<Graph<Player, DefaultEdge>> new_list_stronglyConnectedSubgraphs = new ArrayList<>();
-        new_list_stronglyConnectedSubgraphs = remove_graphs_with_no_hamilton_cycle(stronglyConnectedSubgraphs);
-       
-        
-//        System.out.println("Strongly connected components: "); //Copy of above to show that stronglyConnectedSubgraphs has its graphs (with only one neighbour) removed
+//		// computes all the strongly connected components of the directed graph with Tarjan's algorithm DOES NOT WORK - prints tuple edges only
+//		TarjanSimpleCycles scTarjan = new TarjanSimpleCycles(directedGraph);
+//		List<Graph<Player, DefaultEdge>> stronglyConnectedSubgraphs = scTarjan.findSimpleCycles();
+//		System.out.println("Strongly connected components: " + stronglyConnectedSubgraphs);
+		
+//		 // prints the strongly connected components BEFORE removing graphs with definitely no hamilton cycle //NOT DONE as it will be too long
 //        for (int i = 0; i < stronglyConnectedSubgraphs.size(); i++) {
 //            System.out.println(stronglyConnectedSubgraphs.get(i));
 //        }
         
+		
+        List<Graph<Player, DefaultEdge>> new_list_stronglyConnectedSubgraphs = new ArrayList<>();
+        new_list_stronglyConnectedSubgraphs = remove_graphs_with_no_hamilton_cycle(stronglyConnectedSubgraphs);
+        System.out.println("Strongly connected components: " + new_list_stronglyConnectedSubgraphs.size()); //Copy of above to show that stronglyConnectedSubgraphs has its graphs (with only one neighbour) removed
+        for (int i = 0; i < new_list_stronglyConnectedSubgraphs.size(); i++) {
+            System.out.println(new_list_stronglyConnectedSubgraphs.get(i));
+        }
         
         
-//        ONLY USE THE BELOW FUNCTION IF YOU WANT TO FIND OUT which person to start & end with to get the maximum path but this is pretty useless!
+        
+//        // NOT USED ANYMORE - brute-force method that fails when number of vertices > 10. The method below finds which person to start & end with to get the maximum path.
 //        Map<Integer, GraphPath<Player, DefaultEdge>> longestpathMap = new HashMap<Integer, GraphPath<Player, DefaultEdge>>();
 //        for (int index = 0; index < new_list_stronglyConnectedSubgraphs.size(); index++) {
 //        	try {
@@ -148,6 +155,7 @@ public class Graphing extends Arrange {
 //            }
 //        }
         
+//           NOT USED ANYMORE - takes only the largest sized strongly-connected component
         Map<Integer, Graph<Player, DefaultEdge>> largestVertexGraphMap = new HashMap<>();
         for (int index = 0; index < new_list_stronglyConnectedSubgraphs.size(); index++) {
  
@@ -159,6 +167,26 @@ public class Graphing extends Arrange {
         		largestVertexGraphMap.put(directedGraph_01.vertexSet().size(), directedGraph_01);
             }
         
+		
+      //UNCOMMENT PARAGRAPH		
+//        Set<Player> Full_set_of_accepted_players_from_strongly_connected_components = new HashSet<>();
+//        List<Player> Full_list_of_rejected_players_from_strongly_connected_components = new ArrayList<>();
+//        List<Player> Full_list_of_players = new ArrayList<>();
+//        List<Player> fullvertexSetCopy = List.copyOf(directedGraph.vertexSet());
+//        Full_list_of_players.addAll(fullvertexSetCopy);
+//        for (Graph<Player, DefaultEdge> g : new_list_stronglyConnectedSubgraphs) {
+//        	 System.out.println("=======Combining strongly connected graphs=======");
+//        	 List<Player> vertexSetCopy = List.copyOf(g.vertexSet());
+//        	 Full_set_of_accepted_players_from_strongly_connected_components.addAll(vertexSetCopy);
+//        }
+//        System.out.println("\nAccepted players Set: " + Full_set_of_accepted_players_from_strongly_connected_components);
+//        List<Player> Full_list_of_accepted_players_from_strongly_connected_components = List.copyOf(Full_set_of_accepted_players_from_strongly_connected_components);
+//        List<Player> List_of_rejected_players_from_strongly_connected_components = return_rejected_player_list(Full_list_of_players, Full_list_of_accepted_players_from_strongly_connected_components);
+//        directedGraph.removeAllVertices(List_of_rejected_players_from_strongly_connected_components);
+//        System.out.println("\nNew DirectedGraph Vertex Set: "+ directedGraph.vertexSet());
+        
+
+        
         //Find Hamiltonian path 
 //        System.out.println("Shortest path from i to c:");
 //        TwoApproxMetricTSP<Player,DefaultEdge> TSPclass = new HamiltonianCycleAlgorithmBase()<>();
@@ -167,23 +195,36 @@ public class Graphing extends Arrange {
 //        DijkstraShortestPath<String, DefaultEdge> dijkstraAlg = new DijkstraShortestPath<>(directedGraph);
 //        SingleSourcePaths<String, DefaultEdge> iPaths = dijkstraAlg.getPaths("i");
 //        System.out.println(iPaths.getPath("c") + "\n");
-//        
+        
+        
+//        directedGraph_02 NOT USED ANYMORE - use directedGraph instead
         int maxKeyValueInMap = Collections.max(largestVertexGraphMap.keySet());
         System.out.println("Max Key Value In Map: " + maxKeyValueInMap + "\n");
         Graph<Player, DefaultEdge> directedGraph_02 = new DefaultDirectedGraph<Player, DefaultEdge>(DefaultEdge.class);
         directedGraph_02 = largestVertexGraphMap.get(maxKeyValueInMap);
         System.out.println("Graph in maxKey: " + directedGraph_02 + "\n");
-        dfsWithoutRecursion(directedGraph_02);
-//        List<Player> accepted_player_list = new ArrayList<>();
-//        accepted_player_list = largestVertexGraphMap.get(maxKeyValueInMap);
-//        List<Player> rejected_player_list = new ArrayList<>();
-//        List<Player> rejected_players_list = return_rejected_player_list(player_list, accepted_player_list);
-//        try {
-//        writeRowsToCsv(csv_output, accepted_player_list, mappingStrategy);
-//        } catch (Exception e) {
-//        	System.out.println("Something went wrong.");
-//        }
-//        System.out.println("\n~~CSV printed!!~~");
+        
+        
+        List<Player> accepted_player_list = new ArrayList<>();
+        accepted_player_list = dfsWithoutRecursion(directedGraph_02, length_of_paths_considered_complete);
+        System.out.println("\nAccepted players list: " + accepted_player_list);
+        while (accepted_player_list == null) {
+        	System.out.println("\n======================Sorry, no graph path found for desired path length " + length_of_paths_considered_complete + " with randomly-generated starting node. Re-running algorithm.======================");
+        	accepted_player_list = dfsWithoutRecursion(directedGraph_02, length_of_paths_considered_complete);
+        } 
+        System.out.println("\n=============Graph path found for desired path length " + length_of_paths_considered_complete + "! Algorithm stopped.=============");
+        
+        
+        
+        
+        List<Player> rejected_player_list = return_rejected_player_list(player_list, accepted_player_list);
+        try {
+        writeRowsToCsv(csv_output, accepted_player_list, mappingStrategy);
+        } catch (Exception e) {
+        	System.out.println("Something went wrong.");
+        }
+        System.out.println("\n~~CSV printed!!~~");
+        
 
         
 
