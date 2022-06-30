@@ -41,10 +41,10 @@ Although the *concurrent processing feature* of Java was not used in this algori
 
 The drawback for efficiency is that you have to declare every single intuitive part of the code.\
 Every single Java variable/class had to be declared specifically with what type(s) of data they should accept.
-To illustrate, you create a Python tuple object (i.e. a collection which is ordered and unchangeable) by simply declaring\
+To illustrate, you create a **Python** tuple object (i.e. a collection which is ordered and unchangeable) by simply declaring:\
 `tuple_test = (Player01, Player02)`\
 where "Player01" and "Player02" are *Player* objects.\
-However, in Java you had use the *Pair* Java data structure and declare:\
+However, you create a **Java** tuple object by using the in-built *Pair* Java data structure and declaring:\
 `Pair<Player,Player> tuple_test = new Pair<> (Player01, Player02)`\
 The code means *tuple_test* is of the Java object/class *Pair* which can accept a tuple data structure of *Player* objects) before you could use *tuple_test* in the matchmaking algorithm.
  
