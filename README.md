@@ -37,7 +37,7 @@ Now that I have completed the project after **6 full days** of working on this p
 Java is really the bigger and more efficient brother of Python.
 The numerous classes with builder classes, Java bean objects, and Java really gives you almost unlimited capability to create and process anything you want in a much faster way than Python.
 One example is Java's ability to concurrently run functions (the *concurrent processing feature* of Java), whereas Python only runs one function at any time in a script.
-Although the *concurrent processing feature* of Java was not used in this algorithm, the algorithm still ran noticeably faster than the Python algorithm in matchmaking over 400 players. It is well-known from benchmarks that Java is more energy-efficient and faster than Python, as seen [in this article](https://devm.io/java/energy-efficient-programming-languages-137264).
+Although the *concurrent processing feature* of Java was not used in this algorithm, the Java algorithm still ran **noticeably faster** than the Python algorithm in matchmaking <u>over 400 players</u>. It is well-known from benchmarks that **Java is more energy-efficient and faster than Python**, as seen [in this article](https://devm.io/java/energy-efficient-programming-languages-137264).
 
 The drawback for efficiency is that you have to declare every single intuitive part of the code.\
 Every single Java variable/class had to be declared specifically with what type(s) of data they should accept.
