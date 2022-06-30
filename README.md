@@ -4,8 +4,6 @@
 ###### A Telegram app to chat anonymously with potential dates:
 Delicacies Matchmaking is a Singapore-wide anonymous dating event for university students, with an average of 400+ signups per event. I run it every few months and the idea was conceived & actualized solely by me in Dec 2021. It is a 100% online Telegram event where every participant gets two random and anonymous matches that fit their Gender, Age, Race, Religion & Relationship preferences *(matching is done with a Depth First Search algorithm)*. Participants have **one month** to chat with their matches, and it will be up to them to reveal their identities before the app is taken down.
 
-![](./matching/pics/how_to_edit_README_in_parent_directory.png)
-
 Matches chat anonymously with one another through two Telegram bots, one for each match. The bots enable anonymity, which helps to lower the consequences of making a bad first impression or faux pas. To break the ice, matches can find out more about each other through details they have declared at sign-up such as **Two Truths One Lie, Fun Facts, Interests, Dealbreakers** & **responses to 40 fun icebreaker questions**. An example of the 40 icebreaker questions can be seen [here](https://docs.google.com/spreadsheets/d/1k2IsHvhYo4gminzRAg9qW_9qqUREXl0brioESlH1_B4/edit?usp=sharing).
 
 According to my Delicacies Matchmaking PDPA policy, we destroy all online & offline sign-up and matchmaking data after every event.
@@ -22,7 +20,7 @@ Thus, I set out to do something crazy: **recreating a Depth-First Search algorit
 
 ##### <ins>The pain and reward of learning a new coding language</ins>
 Sure enough, I faced many challenges which although enriching, were extremely *painful*.
-I not only had to learn all the new Java objects, coding structure, syntaxes and more, I also had to dabble quite deep in Graph Theory Data Structures with the Java module [JGraphT](https://jgrapht.org/) to use a Strongly Connected Components algorithm to eventually make a fast matchmaking algorithm.  
+I not only had to learn all the new Java objects, coding structure, syntaxes and more, I also had to dabble quite deep in Graph Theory Data Structures with the Java module [JGraphT](https://jgrapht.org/) to use a **Strongly Connected Components algorithm** to eventually make a fast Depth-First Search matchmaking algorithm.  
 
 For example, the first task I embarked on was to create functions that "simply" import the Excel player list data into Java as Java objects, which would then be evaluated through the Depth-First Search algorithm.
 Turns out, this was not simple at all as this first task took **12 hours** as I was stuck on following outdated tutorials on how to use OpenCSV module in Java, and was also not used to the Builder types of classes in Java (which hardly existed in Python).
@@ -55,8 +53,8 @@ In Python algorithms, you do not need to worry about memory management as it is 
 
 ### About the Algorithm
 ##### <ins>Why I made my repository public</ins>
-My Python coding skills was developed by heavily studying & recoding the [public repository of the Python matchmaking algorithm by Sriram Sami](https://github.com/frizensami/archangel), which I implemented in my Delicacies Matchmaking project.\
-Hence, I wish to give back to the community by sharing the matchmaking algorithm in Java coding language for anyone interested to learn about algorithms in Java using *Graph Theory Data Structures*.
+My Python coding skills was developed by heavily studying & recoding the [public repository of the Python matchmaking algorithm by Sriram Sami](https://github.com/frizensami/archangel), which I implemented in my Delicacies Matchmaking project. I am grateful for such a good learning opportunity.\
+Hence, I wish to give back to the community by sharing the matchmaking algorithm in Java coding language for anyone interested to learn about **algorithms in Java** using **Graph Theory Data Structures**.
 
 Thus, I will explain every part of my algorithm in Java henceforth.
 
