@@ -49,7 +49,9 @@ However, you create a **Java** tuple object by using the in-built *Pair* Java da
 The code means *tuple_test* is of the Java object/class *Pair* which can accept a tuple data structure of *Player* objects) before you could use *tuple_test* in the matchmaking algorithm.
  
 For instance, I learnt that Java is **not beginnner-friendly at all** when compared to Python in that if you tried to run algorithms that required Java to process over **300,000 possibilities of matchmaking 400+ players** of player data, Eclipse (the IDE to code and run this Java script) will freeze and give an *OutOfMemory* Java error.\
-Whereas in Python algorithms, you do not need to worry about memory management as it is automatically done for you; in the background, Python will throw away data . But in Java, you have to manually manage the memory usage. I eventually fixed this problem by throwing away a huge percentage of the Java lists that I know would likely be useless. (I will explain this error in detail later in this article)
+Whereas in Python algorithms, you do not need to worry about memory management as it is automatically done for you; in the background, Python seems to handle the 300,000+ possibilities without breaking down.
+
+However in Java, you have to manually manage the memory usage. I eventually fixed this problem by throwing away a huge percentage of possibilities that I know would likely be useless. (I will explain this solution in detail later in this article)
 
 ### About the Algorithm
 ##### <ins>Why I made my repository public</ins>
