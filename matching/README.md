@@ -31,7 +31,6 @@
 |:---:| 
 |*Remove ".git" from the copied clone URL in the URI!*|
 | ![](./pics/install_step05.png)
-|:---:|
 |*URI should look like this!*|
 
 **6.** Follow steps according to the pictures
@@ -114,10 +113,8 @@ Then simply update pom.xml with the latest stable versions. As soon as you save 
 |:---:| 
 | *Before updating the version numbers* |
 | ![](./pics/update_dep_02.png)
-|:---:| 
 | *After updating the version numbers* |
 | ![](./pics/update_dep_03.png)
-|:---:| 
 | *You should be able to ping for the latest version by typing* |
 
 ##### <ins>How to create a new Java+Maven project while importing</ins>
@@ -134,5 +131,6 @@ Then simply update pom.xml with the latest stable versions. As soon as you save 
 | ![](./pics/install_new_maven_project_step11.png)
 | *With All Catalogs selected, scroll down to find maven-archetype-quickstart, select it then click Next* |
 | ![](./pics/install_new_maven_project_step12.png)
-| *Name your new Maven project (Note: If Artifact Id is the same as your cloned Project name, the clone and the new Maven Project will be merged incorrectly and cause problems. So ensure that your cloned Project and the new Maven Project are in different directories!* |
+| *Name your new Maven project\
+(Note: If Artifact Id is the same as your cloned Project name, the clone and the new Maven Project will be merged incorrectly and cause problems. So ensure that your cloned Project and the new Maven Project are in different directories!)* |
   
