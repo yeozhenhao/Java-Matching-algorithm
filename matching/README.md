@@ -119,6 +119,7 @@ Then simply update pom.xml with the latest stable versions. As soon as you save 
 
 ##### <ins>How to create a new Java+Maven project while importing</ins>
 ###### Continue from Step 6 in the Setting up the project section.
+Tutorial was referenced from [here](https://toolsqa.com/maven/create-new-maven-project-eclipse/)
 
 **7.** Follow according to the pictures
 | ![](./pics/install_new_maven_project_step08.png)
