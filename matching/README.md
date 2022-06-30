@@ -26,6 +26,7 @@
 - Remove *".git"* from the copied clone URL in the URI, or else there will be authorization problems pushing to the remote GitHub repository from Eclipse.
 - Fill in *User* as the owner's username
 - Fill in *Password* as the GitHub Access Key - this has to be generated on the owner's GitHub account.
+
 | ![](./pics/install_step04.png)
 |:---:| 
 |*Remove ".git" from the copied clone URL in the URI!*|
@@ -38,17 +39,17 @@
 |:---:| 
 |*Click Next*|
 | ![](./pics/install_step07.png)
-|:---:| 
 |*Choose Directory to store your project in*|
+
+**7.** Follow steps according to the pictures
 | ![](./pics/install_step08.png)
 |:---:| 
 |*Select Import existing Eclipse projects (as there is a pom.xml file in the GitHub repository)*|
 | ![](./pics/install_step09.png)
-|:---:| 
 |*Click Next*|
 | ![](./pics/install_step10.png)
-|:---:| 
 |*Test: Your Eclipse should show no errors with the imports in the Graphing.java file*|
+
 
 # DEBUGGING
 ##### <ins>How to edit README in the parent directory</ins>
@@ -88,16 +89,12 @@ Then, click the *Libraries* tab, select the JRE System Library then click *Edit*
 |:---:| 
 | *Click Add* |
 | ![](./pics/JavaBuildPath_Edit_Debug03.png)
-|:---:| 
 | *Click Next* |
 | ![](./pics/JavaBuildPath_Edit_Debug04.png)
-|:---:| 
 | *Click Directory and select the installation dir of JDK* |
 | ![](./pics/JavaBuildPath_Edit_Debug05.png)
-|:---:| 
 | *Select the new JRE you just added* |
 | ![](./pics/JavaBuildPath_Edit_Debug06.png)
-|:---:| 
 | *Now the Execution environment should allow you to select the correct JDK* |
 
 ##### <ins>How to quickly update Maven depedencies to the latest versions</ins>
@@ -123,7 +120,19 @@ Then simply update pom.xml with the latest stable versions. As soon as you save 
 |:---:| 
 | *You should be able to ping for the latest version by typing* |
 
+##### <ins>How to create a new Java+Maven project while importing</ins>
+###### Continue from Step 6 in the Setting up the project section.
 
-
-
+**7.** Follow according to the pictures
+| ![](./pics/install_new_maven_project_step08.png)
+|:---:| 
+| *Select Import using the New Project Wizard* |
+| ![](./pics/install_new_maven_project_step09.png)
+| *Select Maven Project* |
+| ![](./pics/install_new_maven_project_step10.png)
+| *Deselect everything, then choose Workspace Location* |
+| ![](./pics/install_new_maven_project_step11.png)
+| *With All Catalogs selected, scroll down to find maven-archetype-quickstart, select it then click Next* |
+| ![](./pics/install_new_maven_project_step12.png)
+| *Name your new Maven project (Note: If Artifact Id is the same as your cloned Project name, the clone and the new Maven Project will be merged incorrectly and cause problems. So ensure that your cloned Project and the new Maven Project are in different directories!* |
   
