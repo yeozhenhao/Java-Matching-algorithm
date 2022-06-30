@@ -131,6 +131,5 @@ Then simply update pom.xml with the latest stable versions. As soon as you save 
 | ![](./pics/install_new_maven_project_step11.png)
 | *With All Catalogs selected, scroll down to find maven-archetype-quickstart, select it then click Next* |
 | ![](./pics/install_new_maven_project_step12.png)
-| *Name your new Maven project\
-(Note: If Artifact Id is the same as your cloned Project name, the clone and the new Maven Project will be merged incorrectly and cause problems. So ensure that your cloned Project and the new Maven Project are in different directories!)* |
+| *Name your new Maven project\(Note: If Artifact Id is the same as your cloned Project name, the clone and the new Maven Project will be merged incorrectly and cause problems. So ensure that your cloned Project and the new Maven Project are in different directories!)* |
   
