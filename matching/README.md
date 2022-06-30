@@ -5,7 +5,7 @@
 ###### By default, you cannot see the README.md file in your Package Explorer tab on your left.
 This is because parent directory (which normally includes only .gitignore, LICENSE and README.md files) are hidden from view due to filters. To remove the filters, access README.md through the *Working Tree* in the **Git Repositories** tab.
 
-![](sshots/how_to_edit_README_in_parent_directory.png)
+![](./sshots/how_to_edit_README_in_parent_directory.png)
 
 
 Matches chat anonymously with one another through two Telegram bots, one for each match. The bots enable anonymity, which helps to lower the consequences of making a bad first impression or faux pas. To break the ice, matches can find out more about each other through details they have declared at sign-up such as **Two Truths One Lie, Fun Facts, Interests, Dealbreakers** & **responses to 40 fun icebreaker questions**. An example of the 40 icebreaker questions can be seen [here](https://docs.google.com/spreadsheets/d/1k2IsHvhYo4gminzRAg9qW_9qqUREXl0brioESlH1_B4/edit?usp=sharing).
