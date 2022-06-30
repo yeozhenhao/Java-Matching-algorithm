@@ -40,7 +40,7 @@ One example is Java's ability to concurrently run functions (the *concurrent pro
 Although the *concurrent processing feature* of Java was not used in this algorithm, the Java algorithm still ran **noticeably faster** than the Python algorithm in matchmaking <ins>over 400 players</ins>. It is well-known from benchmarks that **Java is more energy-efficient and faster than Python**, as seen [in this article](https://devm.io/java/energy-efficient-programming-languages-137264).
 
 The drawback for efficiency is that you have to declare every single intuitive part of the code.\
-Every single Java variable/class had to be declared specifically with what type(s) of data they should accept.
+Every single Java variable/class had to be declared specifically with what type(s) of data they should accept.\
 To illustrate, you create a **Python** tuple object (i.e. a collection which is ordered and unchangeable) by simply declaring:\
 `tuple_test = (Player01, Player02)`\
 where "Player01" and "Player02" are *Player* objects.\
