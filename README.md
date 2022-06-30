@@ -37,7 +37,7 @@ Now that I have completed the project after **6 full days** of working on this p
 Java is really the bigger and more efficient brother of Python.
 The numerous classes with builder classes, Java bean objects, and Java really gives you almost unlimited capability to create and process anything you want in a much faster way than Python.
 One example is Java's ability to concurrently run functions (the *concurrent processing feature* of Java), whereas Python only runs one function at any time in a script.
-Although the *concurrent processing feature* of Java was not used in this algorithm, the algorithm still ran noticeably faster than the Python algorithm in matchmaking over 300 players.
+Although the *concurrent processing feature* of Java was not used in this algorithm, the algorithm still ran noticeably faster than the Python algorithm in matchmaking over 400 players. It is well-known from benchmarks that Java is more energy-efficient and faster than Python, as seen [in this article](https://devm.io/java/energy-efficient-programming-languages-137264).
 
 The drawback for efficiency is that you have to declare every single intuitive part of the code.\
 Every single Java variable/class had to be declared specifically with what type(s) of data they should accept.
@@ -48,8 +48,8 @@ However, in Java you had use the *Pair* Java data structure and declare:\
 `Pair<Player,Player> tuple_test = new Pair<> (Player01, Player02)`\
 The code means *tuple_test* is of the Java object/class *Pair* which can accept a tuple data structure of *Player* objects) before you could use *tuple_test* in the matchmaking algorithm.
  
-For instance, I learnt that Java is **not beginnner-friendly at all** when compared to Python in that if you tried to run algorithms that required Java to process over **300,000 Java ordered lists** of player data, Eclipse (the IDE to code and run this Java script) will freeze and give an *OutOfMemory* Java error.\
-In Python algorithms, you do not need to worry about memory management as it is automatically done for you. But in Java, you have to manually manage the memory usage. I eventually fixed this problem by throwing away a huge percentage of the Java lists that I know would likely be useless. (I will explain this error in detail later in this article)
+For instance, I learnt that Java is **not beginnner-friendly at all** when compared to Python in that if you tried to run algorithms that required Java to process over **300,000 possibilities of matchmaking 400+ players** of player data, Eclipse (the IDE to code and run this Java script) will freeze and give an *OutOfMemory* Java error.\
+Whereas in Python algorithms, you do not need to worry about memory management as it is automatically done for you; in the background, Python will throw away data . But in Java, you have to manually manage the memory usage. I eventually fixed this problem by throwing away a huge percentage of the Java lists that I know would likely be useless. (I will explain this error in detail later in this article)
 
 ### About the Algorithm
 ##### <ins>Why I made my repository public</ins>
