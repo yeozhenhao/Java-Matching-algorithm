@@ -3,6 +3,7 @@ package org.delicacies.matching;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Random;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -15,6 +16,8 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -53,9 +56,14 @@ public class Graphing extends Arrange {
 		final Integer length_of_paths_considered_complete = 308;
 		final Integer stack_path_clearing_divisor_number = 500; // A Java server with 2GB RAM stack_path size can handle up to 400,000 before crashing (OutOfMemory Error) 
 		
+		// Find the current date and time in your system; to be used in naming the csv outputs
+		LocalDateTime date_now_utc = LocalDateTime.now();
+		String date_now_string = date_now_utc.format(DateTimeFormatter.ofPattern("dd-MM-yy HH-mm-ss"));
+		System.out.println("Date now is " + date_now_string);
+		
 		String csv_path = "playerlist.csv";
-		String accepted_players_csv_output = "Accepted Players List.csv";
-		String rejected_players_csv_output = "Rejected Players List.csv";
+		String accepted_players_csv_output = "Accepted Players" + date_now_string + ".csv";
+		String rejected_players_csv_output = "Rej Players" + date_now_string + ".csv";
 
 		//Create mapping before reading CSV
 		Map<String, String> columnMapping = new HashMap<String, String>();
@@ -133,10 +141,9 @@ public class Graphing extends Arrange {
 //            }
 //        }
         
-        //Take only the largest sized strongly-connected component
+        //Find the largest number of vertices of the largest sized strongly-connected component
         Map<Integer, Graph<Player, DefaultEdge>> largestVertexGraphMap = new HashMap<>();
         for (int index = 0; index < new_list_stronglyConnectedSubgraphs.size(); index++) {
- 
 //        		System.out.println("\nIndex " + index + " with graph: " + new_list_stronglyConnectedSubgraphs.get(index));
 //        		Graph<Player, DefaultEdge> directedGraph_01 = new DefaultDirectedGraph<Player, DefaultEdge>(DefaultEdge.class);
 //        		directedGraph_01 = new_list_stronglyConnectedSubgraphs.get(index);
@@ -144,22 +151,34 @@ public class Graphing extends Arrange {
 //        		System.out.println("Graph: " + directedGraph_01);
         		largestVertexGraphMap.put(new_list_stronglyConnectedSubgraphs.get(index).vertexSet().size(), new_list_stronglyConnectedSubgraphs.get(index));
             }
-        
-        
-        
         int maxKeyValueInMap = Collections.max(largestVertexGraphMap.keySet());
         System.out.println("Max Key Value In Map: " + maxKeyValueInMap + "\n");
-        Graph<Player, DefaultEdge> directedGraph_02 = new DefaultDirectedGraph<Player, DefaultEdge>(DefaultEdge.class);
-        directedGraph_02 = largestVertexGraphMap.get(maxKeyValueInMap);
-        System.out.println("Graph in maxKey: " + directedGraph_02 + "\n");
         
         
         
-        List<Player> accepted_player_list = dfsWithoutRecursion(directedGraph_02, length_of_paths_considered_complete, stack_path_clearing_divisor_number);
+        List<Graph<Player, DefaultEdge>> list_of_largest_stronglyConnectedSubgraphs = new ArrayList<Graph<Player, DefaultEdge>>();
+        for (Graph<Player, DefaultEdge> e : new_list_stronglyConnectedSubgraphs) {
+        	if (e.vertexSet().size() == maxKeyValueInMap) {
+        		list_of_largest_stronglyConnectedSubgraphs.add(e);
+        	}
+        }
+        System.out.println("Number of SCC graphs with largest number of vertexes: " + list_of_largest_stronglyConnectedSubgraphs.size() + "\n");
+        
+        
+        
+        Graph<Player, DefaultEdge> directedGraph_largest = new DefaultDirectedGraph<Player, DefaultEdge>(DefaultEdge.class);
+        Random rand = new Random();
+        int random_index = rand.nextInt(list_of_largest_stronglyConnectedSubgraphs.size()); // The nextInt(int n) is used to get a random number between 0(inclusive) and the number passed in this argument(n), exclusive.
+        directedGraph_largest = list_of_largest_stronglyConnectedSubgraphs.get(random_index);
+        System.out.println("Graph maximum number of vertexes to be processed by DFS: " + directedGraph_largest + "\n");
+        
+        
+        
+        List<Player> accepted_player_list = dfsWithoutRecursion(directedGraph_largest, length_of_paths_considered_complete, stack_path_clearing_divisor_number);
         System.out.println("\nAccepted players list: " + accepted_player_list);
         while (accepted_player_list == null) {
         	System.out.println("\n======================Sorry, no graph path found for desired path length " + length_of_paths_considered_complete + " with randomly-generated starting node. Re-running algorithm.======================");
-        	accepted_player_list = dfsWithoutRecursion(directedGraph_02, length_of_paths_considered_complete, stack_path_clearing_divisor_number);
+        	accepted_player_list = dfsWithoutRecursion(directedGraph_largest, length_of_paths_considered_complete, stack_path_clearing_divisor_number);
         } 
         System.out.println("\n=============Graph path found for desired path length " + length_of_paths_considered_complete + "! Algorithm stopped.=============");
         

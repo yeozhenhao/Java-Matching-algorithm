@@ -205,7 +205,7 @@ public class Arrange {
 		
 		int max_possible_path_length = G.vertexSet().size();
 		Random rand = new Random();
-		int random_start_node_number = rand.nextInt(G.vertexSet().size() - 1);
+		int random_start_node_number = rand.nextInt(G.vertexSet().size()); // The nextInt(int n) is used to get a random number between 0(inclusive) and the number passed in this argument(n), exclusive.
 		
 		Stack<Graph<Player,DefaultEdge>> stack_graph = new Stack<>();
 	    Stack<List<Player>> stack_path = new Stack<>();

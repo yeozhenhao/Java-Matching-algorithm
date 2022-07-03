@@ -165,8 +165,17 @@ List<Player> player_list = beanBuilder.withType(Player.class).withMappingStrateg
 ```
 #### <ins>Advanced - combining Graph Theory and Depth-First Search for a fast matchmaking algorithm</ins>
 ##### <ins>1. Graphing.java: Creating the Graph Theory part of the algorithm</ins>
-###### A. Creating the Directed Graph
-[*Directed Graph*](https://mathworld.wolfram.com/DirectedGraph.html) is a **data structure type** available in the *JGraphT* Java module.
+###### A. Creating the Directed Graph (and the purpose of it)
+Using the player list, we put all of the players in a directed graph using the following code in the *main* function:
+```
+Graph<Player, DefaultEdge> directedGraph = new DefaultDirectedGraph<Player, DefaultEdge>(DefaultEdge.class);
+
+for (Player p : player_list) {
+			directedGraph.addVertex(p);
+		}
+```
+
+*Directed Graph* is a **data structure type** available in the *JGraphT* Java module. [Click here to learn more about directed graphs](https://mathworld.wolfram.com/DirectedGraph.html)
 
 <ins>How this applies to Delicacies Matchmaking:</ins>\
 We want every player to be a vertex (aka point) on a graph.
@@ -185,20 +194,54 @@ But we cannot have most of our Players not getting any suitable matches. Thus, i
 
 >However, do we really need a perfect solution?
 
+###### B. Creating the solution part 1 (Strongly Connected Components)
+
 We know by common sense that we could just get *someone* to spend days to look through the entire Excel file, and just match as many players together as possible. Since the matching preferences are not too restricting, it would not take forever to find a solution that's good enough (e.g. matching >80% of players). So there is obviously a coding way to find a possible way to match most people.
 
 What that *someone* did is essentially Depth-First Search (DFS) algorithm. Thus, we just need to create our own DFS algorithm.
 [Time complexity of using DFS to find a good enough solution is O(N^2).](https://www.geeksforgeeks.org/longest-path-in-a-directed-acyclic-graph-dynamic-programming/#:~:text=The%20time%20complexity%20of%20this,starting%20from%20the%20node%20i.)
 
-To make our algorithm even more efficient, we can use an established [Kosaraju's Strongly Connected Components algorithm](https://www.programiz.com/dsa/strongly-connected-components#:~:text=A%20strongly%20connected%20component%20is,only%20on%20a%20directed%20graph.) (SCC) to filter out vertices that have only one possible match instead of more than one.
-Such players would easily cause a "dead end" on a directed graph and stop our DFS algorithm.\
+To make our DFS algorithm even more efficient, we can use an established [Kosaraju's Strongly Connected Components algorithm](https://www.programiz.com/dsa/strongly-connected-components#:~:text=A%20strongly%20connected%20component%20is,only%20on%20a%20directed%20graph.) (SCC) to filter out vertices that have only one/zero possible match before running the DFS algorithm.\
+Such players would easily cause a "dead end" on a directed graph and stop our DFS algorithm.
+
 Thus, we will run SCC to find the strongly connected groups of vertices, then run DFS on them to save time as DFS will much less likely run into "dead ends". [SCC has a time complexity of O(V+E).](https://www.programiz.com/dsa/strongly-connected-components#:~:text=A%20strongly%20connected%20component%20is,only%20on%20a%20directed%20graph.)
 
-
-
-
-
-
-| ![](./matching/pics/GT1.png)
+With the following code, we will find all the strongly-connected components of the directed graph:
+| ![](./matching/pics/Alg1.png)
 |:---:| 
-|*First 10% of the main function - final result*|
+|*This code finds all the SCCs of the directed graph of players*|
+
+However, this list includes graphs which consist of one vertex (as a graph by itself can still be considered a strongly-connected component). Thus, we will remove graphs with **no** *Hamilton cycle* by removing all graphs with only 1 vertex from the list. The code is:
+```
+List<Graph<Player, DefaultEdge>> new_list_stronglyConnectedSubgraphs = remove_graphs_with_no_hamilton_cycle(stronglyConnectedSubgraphs);
+```
+where a *remove_graphs_with_no_hamilton_cycle* function was created in another Arrange.java class defined as:
+| ![](./matching/pics/Alg2.png)
+|:---:| 
+|*This function is stored in a separate Arrange.java to avoid clutter in the Graphing.java algorithm script*|
+
+
+With the <ins>list of graphs</ins> (which are **strongly-connected components** of the *directedGraph* and **where each graph contains more than 1 vertex**) stored in the *stronglyConnectedSubgraphs* variable, we will run **DFS** <ins>on each graph in this list</ins>.
+
+However, to save the most time, we want to run DFS on the **largest** strongly-connected component graph **first**. 
+
+First, we create a *HashMap* to store **key-value pairs**, where the **key** is the *number* of vertex in the graph, and the **value** is a strongly-connected component *graph*.
+
+Then, we convert the list of SCC graphs into the *HashMap*, and then find the highest value of the key (aka the *maxKeyValueInMap*).
+
+Finally, we use this key to extract out the graph that has the highest number of vertices and store it in the *directedGraph_02* variable.
+
+| ![](./matching/pics/Alg3.png)
+|:---:| 
+|*Converting list of SCCs into a HashMap of SCCs where key value is the number of vertices*|
+
+> Note: There could be multiple SCCs which have the same max number of vertices. Converting the list of subgraphs into a hashmap where the key is the number of vertices like this will cause SCCs to be overwritten, as there can only be one value (graph) for each key (number of vertices).\
+However in practice, running DFS on any SCC with the largest number of vertices already ensures most players get suitable matches.
+
+
+
+
+
+
+
+###### B. Creating the solution part 2 (Depth-First Search algorithm)
