@@ -74,15 +74,13 @@ public class Graphing extends Arrange {
 		HeaderColumnNameTranslateMappingStrategy mappingStrategy = new HeaderColumnNameTranslateMappingStrategy();
 		mappingStrategy.setType(Player.class);
 		mappingStrategy.setColumnMapping(columnMapping);
-		
-		
+
 		
 		//Recommended to use Bean Builder now instead of Bean constructor
 //		Logger logger = Logger.getLogger(Graphing.class.getName());
 		CsvToBeanBuilder<Player> beanBuilder = new CsvToBeanBuilder(new FileReader("playerlist.csv"));
-		List<Player> player_list = beanBuilder.withType(Player.class).withMappingStrategy(mappingStrategy).build().parse(); //NOTE: csvToBean.parse(strategy, csvReader) is deprecated; //setting .withMappingStrategy(setColumnMapping()) gives an error as Conversion of age to int failed. Use the standard @ (e.g. @CsvBindByName)  
+		List<Player> player_list = beanBuilder.withMappingStrategy(mappingStrategy).build().parse(); //NOTE: csvToBean.parse(strategy, csvReader) is deprecated; //setting .withMappingStrategy(setColumnMapping()) gives an error as Conversion of age to int failed. Use the standard @ (e.g. @CsvBindByName)  
 		
-	    
 		
 //		System.out.println(player_list);
 //		  for (Player p : player_list) { // Same as player_list.forEach(System.out::println);

@@ -23,7 +23,7 @@ Sure enough, I faced many challenges which although enriching, were extremely *p
 I not only had to learn all the new Java objects, coding structure, syntaxes and more, I also had to dabble quite deep in Graph Theory Data Structures with the Java module [JGraphT](https://jgrapht.org/) to use a **Strongly Connected Components algorithm** to eventually make a fast Depth-First Search matchmaking algorithm.  
 
 For example, the first task I embarked on was to create functions that "simply" import the Excel player list data into Java as Java objects, which would then be evaluated through the Depth-First Search algorithm.
-Turns out, this was not simple at all as this first task took **12 hours** as I was getting confused by following outdated tutorials on how to use OpenCSV module in Java, and was also having a difficult time creating new code with the new *Builder* & *Mapping Strategy* classes in the latest **OpenCSV Java module** (which worked very differently from classes in Python).
+Turns out, this was not simple at all as this first task took **12 hours** as I was getting confused by following outdated tutorials on how to use **OpenCSV module** in Java, and was also having a difficult time creating new code with the new *Builder* & *Mapping Strategy* classes in the latest **OpenCSV Java module** (which worked very differently from classes in Python).
 
 The OpenCSV module is essential in importing Excel data as Java objects which can then be manipulated easily in algorithms.
 
@@ -62,8 +62,12 @@ Thus, I will explain every part of my algorithm in Java henceforth.
 
 #### <ins>Basics of any algorithm</ins>
 ##### <ins>1. Player.java: Creating the Player class to store player data as Java objects</ins>
+Ideally, player sign-up data will be stored in an Excel, which can be imported into the Java script. Each row in the Excel contains the sign-up data of one player.
+
+They will need to be stored in a Java object which can be manipulated in the Java script to find suitable dating matches.
+
 ###### A. Defining the attributes of the class
-We plan to create an algorithm in just one *Java package*, containing multiple *.java* files (where each *.java file* contains class[es] of functions). For our Player class to be used in other *.java files*, we need to define a **public** class as a *private* class will not be able to be accessed by other *.java* files in the same [or different] *Java package*. Thus, we also want our class attributes to be **public** too.
+We plan to create an algorithm in just one *Java package*, containing multiple *.java* files (where each *.java file* contains class[es] of functions). For our *Player* class to be used in other *.java files*, we need to define a **public** class as a *private* class will not be able to be accessed by other *.java* files in the same [or different] *Java package*. Thus, we also want our class attributes to be **public** too.
 
 Also, you must define the type of data that the attributes accept (e.g. String, int [which stands for Integer]).
 ```
@@ -71,15 +75,15 @@ public String username;
 public String name;
 public String genderpref;
 ```
-But how does the *OpenCSV Java module* knows that these attributes are associated with a particular column in the Excel file?
-Thus, we need to add one more line of code for each attribute. For example, for the Telegram username, we add:
+But how does the **OpenCSV Java module** know that these attributes are associated with a particular column in the Excel file?
+Thus, we need to add one more line of code for each attribute. For example, for the Telegram username attribute, we add:
 ```
 @CsvBindByName(column = "Telegram Username", required = true)
 	public String username;
 ```
 The column name is the exact name of the Excel column, and the @CsvBindByName is an [annotation](https://docs.oracle.com/javase/tutorial/java/annotations/) that provides supplemental information about a program.
 
-The *Serializable* Java class is also imported into this *.java file* and implemented in the Player class. This is done to ensure that the Player class (aka Java object) can be defined by bytes and hence be easily transferred across networks, disk drives, etc. and these objects can be re-created in any other machine that has Java installed as the bytes contain sufficient data to do so.
+The [*Serializable* Java class](https://docs.oracle.com/javase/tutorial/jndi/objects/serial.html#:~:text=To%20serialize%20an%20object%20means,io.) is also imported into this *.java file* and implemented in the *Player* class. This is done to ensure that the *Player* class (aka Java object) can be defined by bytes and hence be easily transferred across networks, disk drives, etc. and these objects can be re-created in any other machine that has Java installed as the bytes contain sufficient data to do so.
 
 | ![](./matching/pics/classattributes.png)
 |:---:| 
@@ -87,7 +91,8 @@ The *Serializable* Java class is also imported into this *.java file* and implem
 
 
 ###### B. Create the getters and setters in the class
-Defining a class is easy but you still need to define the functions to retrieve and set attributes for the class. Basically, you need getters and setters.\
+Defining a class is easy but you still need to define the functions to retrieve and set attributes for the class. Basically, you need getters and setters.
+
 Getters are functions that enable you to retrieve a specific attribute data from any Player object.\
 The *Java function* **.ToLowerCase()** easily enables you to only **return** the lower-case form of a String attribute.
 
@@ -96,8 +101,9 @@ The *Java function* **.ToLowerCase()** easily enables you to only **return** the
 |*Getters*|
 
 Setters are the opposite; they enable you to set a specific attribute data from any Player object.\ 
-Note that we need to define each setter function as **void** as we do not expect setter functions to return any value to us.\
-**this** is used to refer to the Player object in question.
+Note that we need to define each setter function as **void** as we do not expect setter functions to return any value to us.
+
+The [**this** Keyword](https://www.w3schools.com/java/ref_keyword_this.asp) is used to refer to the Player object in question.
 Basically, we will set the attribute of the <ins>specific instance</ins> of the Player object when the setter function is called.
 
 | ![](./matching/pics/setters.png)
@@ -116,11 +122,83 @@ Before the Player object can be used, you need to create a constructor function 
 |*Constructor - as simple as it is essential*|
   
 ###### D. Add other useful Player class functions as required
-Your Player class is ready, but you can add as many other functions as you'd like.\
-For example, I added a function so I could easily compare two Player's usernames together and ensure that they do not match.
-This is extremely useful for my algorithm later.
+Your *Player* class is ready, but you can add as many other functions as you'd like.\
+For example, I added a function so I could easily compare two Player's usernames together and ensure they do not match.
+This is extremely useful for my algorithm.
 
 | ![](./matching/pics/isEqual.png)
 |:---:| 
 |*Being able to call Certain_Player.isEqual(Other_Player) to check for duplicates is important for my algorithm*|
 
+
+##### <ins>2. Graphing.java: Creating the main algorithm function</ins>
+We will now move to another *.java* file where the main algorithm will be run in.
+###### A. Create the top-level public class and public function
+Each *.java* file can contain many functions, but you must have a class to contain functions. If the top-level class is **public**, then the name of the top-level **public** class must be the same name as the *.java* file. E.g. a top-level **public** function must be named "*Graphing*" in the *Graphing.java* file. See [this article](https://stackoverflow.com/questions/1841847/can-i-compile-a-java-file-with-a-different-name-than-the-class#:~:text=The%20main%20reason%20for%20the,and%20class%20name%20as%20same.) and [this article](https://stackoverflow.com/questions/968347/can-a-java-file-have-more-than-one-class) for more explanation.
+
+After creating the **public** class Graphing in *Graphing.java*, we need to create the *main* function. The *main* function of the top-level **public** class is executed by simply running the *Graphing.java* script. If our algorithm is in the *main* function of the top-level **public** class, the algorithm is simply executed by running the *Graphing.java* script.
+
+The *main* function must be **public**, **static** and **void**. [This article](https://www.journaldev.com/12552/public-static-void-main-string-args-java-main-method#:~:text=Java%20main%20method%20is%20the,be%20written%20as%20String...) explains more in-depth. 
+
+| ![](./matching/pics/main.png)
+|:---:| 
+|*First 10% of the main function - final result*|
+
+###### B. Editing the main function to enable OpenCSV to import Excel player data with the Player class we just created
+
+Ignore the lines of code containing the **final** Keyword for now.
+
+First, we define the input - our player data will be stored in "playerlist.csv".\
+We also define the output - we want the successfully matched players to be stored in "Accepted Players List.csv", and rejected players to be stored in "Rejected Players List.csv".
+
+Next, we need to create a **HashMap** (named *columnMapping*) to map the column names to the name of the attributes of the *Player* class. The attribute names and column names must exactly match what we type in the code. A **HashMap** Java data structure enables us to store a key-value pair of Strings. See [this article](https://www.geeksforgeeks.org/java-util-hashmap-in-java-with-examples/) for examples. 
+
+**OpenCSV Java module** accepts a *Mapping Strategy* to know data in which columns should go to which Player attributes. Thus, we create a *mappingStrategy*, and set it so that it links the *Player* class to the *columnMapping* we just created.
+
+Now, we need to use the *CsvToBeanBuilder* class in **OpenCSV Java module** to enable conversion of the Excel data into *Java Beans* (aka Java Player objects that follow a conventional standard) which can be manipulated in the algorithm for the matchmaking. In short, Java Bean is just a standard that many Java classes conventionally follow. The standard includes being Serializable, and having getters & setters. See [this article](https://stackoverflow.com/questions/8629173/difference-between-java-bean-and-java-class) for information.
+
+Finally, we want every single row of player data to be imported as a list of Player objects (which will allow for much easier manipulation in the algorithm).\
+The code to do this is simply:
+
+```
+List<Player> player_list = beanBuilder.withType(Player.class).withMappingStrategy(mappingStrategy).build().parse();
+```
+#### <ins>Advanced - combining Graph Theory and Depth-First Search for a fast matchmaking algorithm</ins>
+##### <ins>1. Graphing.java: Creating the Graph Theory part of the algorithm</ins>
+###### A. Creating the Directed Graph
+[*Directed Graph*](https://mathworld.wolfram.com/DirectedGraph.html) is a **data structure type** available in the *JGraphT* Java module.
+
+<ins>How this applies to Delicacies Matchmaking:</ins>\
+We want every player to be a vertex (aka point) on a graph.
+
+Then, we want to draw a line through as many players as possible, where **every  connection of one player to another in the graph means the two players are suitable matches** (i.e. matchmaking preferences respected).
+Drawing a line through every vertex forms a **directed** graph.
+
+A directed graph enables us to execute cool algorithms like finding the shortest path from one *Player* vertex to any other *Player* vertex (while respecting the matchmaking preferences). In such a case, we would only simply need to type one line of code that would look beautifully like this:
+```
+List<Player> player_list = DijkstraShortestPath.findPathBetween(graph, starting_vertex, ending_vertex); 
+```
+
+[Dijikstra's shortest path algorithm runs with a time complexity of O(E + VLogV) time.](https://www.geeksforgeeks.org/shortest-path-for-directed-acyclic-graphs/)
+
+But we cannot have most of our Players not getting any suitable matches. Thus, in our case, we need to find the longest path from any one *Player* vertex to the next, and choose the longest path. [Unfortunately, finding the longest path in any general path is **NP-hard**.](https://www.geeksforgeeks.org/find-longest-path-directed-acyclic-graph/) In simpler terms, [NP-hard](https://simple.wikipedia.org/wiki/NP-hardness#:~:text=An%20NP%2Dhard%20problem%20is,be%20checked%20as%20being%20true.) means that even the fastest computers in the world cannot find a **perfect** solution.
+
+>However, do we really need a perfect solution?
+
+We know by common sense that we could just get *someone* to spend days to look through the entire Excel file, and just match as many players together as possible. Since the matching preferences are not too restricting, it would not take forever to find a solution that's good enough (e.g. matching >80% of players). So there is obviously a coding way to find a possible way to match most people.
+
+What that *someone* did is essentially Depth-First Search (DFS) algorithm. Thus, we just need to create our own DFS algorithm.
+[Time complexity of using DFS to find a good enough solution is O(N^2).](https://www.geeksforgeeks.org/longest-path-in-a-directed-acyclic-graph-dynamic-programming/#:~:text=The%20time%20complexity%20of%20this,starting%20from%20the%20node%20i.)
+
+To make our algorithm even more efficient, we can use an established [Kosaraju's Strongly Connected Components algorithm](https://www.programiz.com/dsa/strongly-connected-components#:~:text=A%20strongly%20connected%20component%20is,only%20on%20a%20directed%20graph.) (SCC) to filter out vertices that have only one possible match instead of more than one.
+Such players would easily cause a "dead end" on a directed graph and stop our DFS algorithm.\
+Thus, we will run SCC to find the strongly connected groups of vertices, then run DFS on them to save time as DFS will much less likely run into "dead ends". [SCC has a time complexity of O(V+E).](https://www.programiz.com/dsa/strongly-connected-components#:~:text=A%20strongly%20connected%20component%20is,only%20on%20a%20directed%20graph.)
+
+
+
+
+
+
+| ![](./matching/pics/GT1.png)
+|:---:| 
+|*First 10% of the main function - final result*|

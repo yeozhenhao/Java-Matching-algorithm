@@ -6,9 +6,11 @@ import java.util.Objects;
 import com.opencsv.bean.CsvBindByName;
 
 public class Player implements Serializable {
-	// Instance Variables
-	// Not setting @ e.g. @CsvBindByName will make all @CsvBindByName by default. Columns must be named same as the variables
-	@CsvBindByName(column = "Telegram Username", required = true) //required: Whether or not the annotated field is required to be present in every data set of the input.
+	// These are class attributes aka Instance Variables
+	// Not setting @ e.g. @CsvBindByName will make all @CsvBindByName by default.
+	// Excel Columns must be named the same as the variables
+	//required: Whether or not the annotated field is required to be present in every data set of the input.
+	@CsvBindByName(column = "Telegram Username", required = true)
 	public String username;
 	@CsvBindByName(column = "Name", required = true)
 	public String name;
