@@ -308,7 +308,8 @@ The "while *stack_path* is not empty* condition will run forever. **However, we 
 
 So, we create a **for** loop where for every *List* of players in the *Stack* of possible paths (stored in *stack_path_reset*, we would calculate the size of each *List*. If any of the *Lists* matches the required number of players, *dfsWithoutRecursion* function will stop running and return me the list of players (the *p_list*).
 
-
-
 > This is essential as it ensures that, if we continue generating possible *Hamiltonian* paths of lengths 3, 4, 5, etc., we would not erroneously add players into new paths which were already added before, creating a path with two duplicate players. As every new possible 
 
+If path is not found yet (*path_list_found == false*), then we will rerun the while loop with a *stack_path* of size 2 with their corresponding graphs (with first player removed) in *stack_graph*.
+
+> NOTE: The reason why we have to create a duplicate dummy *Stack* called *stack_graph_reset* instead of using the original *stack_path* in the loop is because of concurrency errors; we are not allowed to push and pop the same *Stack* in the loop for unknown reasons.
