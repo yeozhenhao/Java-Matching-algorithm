@@ -167,7 +167,7 @@ List<Player> player_list = beanBuilder.withType(Player.class).withMappingStrateg
 ##### <ins>1. Graphing.java: Creating the Graph Theory part of the algorithm</ins>
 We need to create an algorithm that generates a *Hamiltonian path* through a directed graph. A [*Hamiltonian path*](https://en.wikipedia.org/wiki/Hamiltonian_path) is a path in an undirected or directed graph that visits each vertex exactly once. With a *Hamiltonian path*, the two adjacent points of a vertex in the path will be the 2 matches that a player can chat with anonymously, perfectly fitting the needs of Delicacies Matchmaking.
 
-![Red: Hamiltonian path](https://en.wikipedia.org/wiki/Hamiltonian_path#/media/File:Hamiltonian.png)
+![Red: Hamiltonian path](https://upload.wikimedia.org/wikipedia/commons/b/be/Hamiltonian.png)
 
 ###### A. Creating the Directed Graph (and the purpose of it)
 Using the player list, we put all of the players in a directed graph using the following code in the *main* function:
