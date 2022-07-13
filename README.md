@@ -165,7 +165,7 @@ List<Player> player_list = beanBuilder.withType(Player.class).withMappingStrateg
 ```
 #### <ins>Advanced - combining Graph Theory and Depth-First Search for a fast matchmaking algorithm</ins>
 ##### <ins>1. Graphing.java: Creating the Graph Theory part of the algorithm</ins>
-We need to create an algorithm that generates a *Hamiltonian path* through a directed graph. A [*Hamiltonian path*](https://en.wikipedia.org/wiki/Hamiltonian_path) is a path in an undirected or directed graph that visits each vertex exactly once. With a *Hamiltonian path*, the two adjacent points of a vertex in the path will be the 2 matches that a player can chat with anonymously, perfectly fitting the needs of Delicacies Matchmaking.
+We need to create an algorithm that generates a *Hamiltonian path* through a directed graph. A [*Hamiltonian path*](https://en.wikipedia.org/wiki/Hamiltonian_path) is a path in an undirected or directed graph that visits each vertex exactly once. With a *Hamiltonian path* (example in red below), the two adjacent points of a vertex in the path will be the 2 matches that a player can chat with anonymously, perfectly fitting the needs of Delicacies Matchmaking.
 
 ![Red: Hamiltonian path](https://upload.wikimedia.org/wikipedia/commons/b/be/Hamiltonian.png)
 
@@ -198,7 +198,7 @@ But we cannot have most of our Players not getting any suitable matches. Thus, i
 
 >However, do we really need a perfect solution?
 
-###### B. Creating the solution part 1 (Strongly Connected Components)
+###### B. Explaining Strongly Connected Components
 
 We know by common sense that we could just get *someone* to spend days to look through the entire Excel file, and just match as many players together as possible. Since the matching preferences are not too restricting, it would not take forever to find a solution that's good enough (e.g. matching >80% of players). So there is obviously a coding way to find a possible way to match most people.
 
@@ -209,6 +209,8 @@ To make our DFS algorithm even more efficient, we can use an established [Kosara
 Such players would easily cause a "dead end" on a directed graph and stop our DFS algorithm.
 
 Thus, we will run SCC to find the strongly connected groups of vertices, then run DFS on them to save time as DFS will much less likely run into "dead ends". [SCC has a time complexity of O(V+E).](https://www.programiz.com/dsa/strongly-connected-components#:~:text=A%20strongly%20connected%20component%20is,only%20on%20a%20directed%20graph.)
+
+###### B. Explaining Hamiltonian Path
 
 With the following code, we will find all the strongly-connected components of the directed graph:
 | ![](./matching/pics/Alg1.png)
@@ -229,6 +231,8 @@ With the <ins>list of graphs</ins> (which are **strongly-connected components** 
 
 However, to save the most time, we want to run DFS on the **largest** strongly-connected component graph **first**. 
 
+###### C. Finding the strongly-connected Graph with the most number of players
+
 First, we create a *HashMap* to store **key-value pairs**, where the **key** is the *number* of vertex in the graph, and the **value** is a strongly-connected component *graph*.
 
 Then, we convert the list of SCC graphs into the *HashMap*, and then find the highest value of the key (aka the *maxKeyValueInMap*).
@@ -239,14 +243,71 @@ Finally, we use this key to extract out the graph that has the highest number of
 |:---:| 
 |*Converting list of SCCs into a HashMap of SCCs where key value is the number of vertices*|
 
-> Note: There could be multiple SCCs which have the same max number of vertices. Converting the list of subgraphs into a hashmap where the key is the number of vertices like this will cause SCCs to be overwritten, as there can only be one value (graph) for each key (number of vertices).\
-However in practice, running DFS on any SCC with the largest number of vertices already ensures most players get suitable matches.
+> Note: There could be multiple SCCs which have the same max number of vertices. Converting the list of subgraphs into a hashmap where the key is the number of vertices like this will cause SCCs of the same number of vertices to be overwritten, as there can only be one value (graph) for each key (number of vertices). This does not matter as we just want to find the maximum number of vertices.
+
+
+| ![](./matching/pics/Alg4.png)
+|:---:| 
+|*We now use *maxKeyValueInMap* to extract out SCCs with the highest number of vertices and add them to a list*|
+| ![](./matching/pics/Alg5.png)
+|*We randomly generate an index to randomly select an SCC to start applying the DFS*|
+
+###### D. Making the DFS algorithm
+
+| ![](./matching/pics/Alg6.png)
+|:---:| 
+|*The DFS algorithm*|
+The *dfsWithoutRecursion* function generates out an ordered list of players where for every player in the list, the player in front and behind them in the order are their matches that suit their preferences.
+
+If no accepted_player_list is generated, then the DFS algorithm is run again. Since the algorithm has a non-deterministic outcome, running the algorithm again may generate a plausible outcome, or sometimes even a *better* one (with more players matched).
+
+To create the DFS algorithm, we have to play around with the *Stack* Java data structures. A *Stack* is an advanced kind of *List*; with a *push* command, you add something to the top of the stack, and with a *pop* command, you remove something from the top of the stack (i.e. remove the most recently added item).
+
+| ![](./matching/pics/java-stack.png)
+|:---:| 
+|*Pushing and Popping a Stack Java data structure*|
+
+We first want Java to randomly choose a vertex in the SCC graph to start drawing a *Hamiltonian* path. A *List* of all possible players in the path will be in *G.vertexSet()*. We will store a copy of *G.vertexSet()* in *listOfNodes* as we do not want to edit the original set of vertexes.
+
+We use another *List* called *start* to store a possible *Hamiltonian* path (as an ordered list of players).
+
+We choose a random player from *listOfNodes* as the first player, and add it to *start*.
+
+<ins>We will create **2** *Stacks*:</ins>
+1. *stack_graph* to store a stack of SCC graphs (of the highest number of vertices)
+2. *stack_path* to store a stack of *Lists* of players. Each *List* is a possible *Hamiltonian* path, and we would choose the *List* with the greatest number of players (i.e. the longest path) from this *Stack*, and we would get the solution we need.
+
+As the very first step in the DFS algorithm, we will add *start* into *stack_path* as a possible answer. 
+
+While *stack_path* is not empty, we will pop out the most recent possible path with *stack_path.pop()*, then add one more possible player to the path (based on the first player's matchmaking preferences), then push it back to *stack_path*. However, because the first player may have numerous suitable matches, there will be numerous possible paths of size two (i.e. two players) pushed back into *stack_path*.
+
+To do this, we will first get the last player (stored in *last_player_in_path*) in the path that was just popped out (stored in *current_path*). Then find the list of neighbours (i.e. the suitable matches) in the *current_graph*.
+
+> The neighbours are found based on the possible Edges of the vertex in its respective graph. An edge is only formed with another vertex in the graph if the matchmaking preferences are respected.
+
+Since our graphs are Directed graphs, there could be more than one vertex having the same edges (aka a [multigraph](https://en.wikipedia.org/wiki/Multigraph)). Since *Graphs.neighborListOf* function of *JGraphT* will return a list of repeated neighbors of a node because of the multigraph nature, we will need to remove the duplicate neighbours (i.e. suitable matches) in the list (stored in *listOfNeighbours_removed_duplicates*.
+
+| ![](./matching/pics/multigraph.png)
+|:---:| 
+|*A multigraph; note that more than 1 line can connect two vertices simultaneously*|
+
+Now we want to create many possible paths from this list of neighbours. **For each possible neighbour of the first player** in *listOfNeighbours_removed_duplicates*, we will create a new *List* of players, and add the first player (by copying the *current_path* into *conf_p*), and then add a neighbour into *conf_p*.
+
+*conf_p* is now pushed back into *stack_path*.
+
+At the same time, we will want to remember that we have are left with lesser possibilities of vertices to choose from. 
+
+We wil first pop the SCC graph that we are currently applying DFS on with *stack_graph.pop()*.
+
+So we create a new *Graph* (called *conf_g*) which is a copy of the *current_graph*, and remove the *last_player_in_path*, which was the first player that we used to find neighbors.
+
+We will push *conf_g* back into *stack_graph*
+
+The "while *stack_path* is not empty* condition will run forever. **However, we know that it may take forever to find for a perfect solution**. Thus, we need to artificially set a size of the path that we are comfortable with. For example, if I am comfortable matchmaking 300 out of 400 sign-ups, I would set *length_of_paths_considered_complete* as 300. If the size of the path is equal to *length_of_paths_considered_complete*, I want the *dfsWithoutRecursion* function to return me the path (i.e. the *List* of players).
+
+So, we create a **for** loop where for every *List* of players in the *Stack* of possible paths (stored in *stack_path_reset*, we would calculate the size of each *List*. If any of the *Lists* matches the required number of players, *dfsWithoutRecursion* function will stop running and return me the list of players (the *p_list*).
 
 
 
-
-
-
-
-###### B. Creating the solution part 2 (Depth-First Search algorithm)
+> This is essential as it ensures that, if we continue generating possible *Hamiltonian* paths of lengths 3, 4, 5, etc., we would not erroneously add players into new paths which were already added before, creating a path with two duplicate players. As every new possible 
 
