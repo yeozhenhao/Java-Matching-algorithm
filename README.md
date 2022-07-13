@@ -257,6 +257,7 @@ Finally, we use this key to extract out the graph that has the highest number of
 | ![](./matching/pics/Alg6.png)
 |:---:| 
 |*The DFS algorithm*|
+
 The *dfsWithoutRecursion* function generates out an ordered list of players where for every player in the list, the player in front and behind them in the order are their matches that suit their preferences.
 
 If no accepted_player_list is generated, then the DFS algorithm is run again. Since the algorithm has a non-deterministic outcome, running the algorithm again may generate a plausible outcome, or sometimes even a *better* one (with more players matched).
