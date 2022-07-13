@@ -165,6 +165,10 @@ List<Player> player_list = beanBuilder.withType(Player.class).withMappingStrateg
 ```
 #### <ins>Advanced - combining Graph Theory and Depth-First Search for a fast matchmaking algorithm</ins>
 ##### <ins>1. Graphing.java: Creating the Graph Theory part of the algorithm</ins>
+We need to create an algorithm that generates a *Hamiltonian path* through a directed graph. A [*Hamiltonian path*](https://en.wikipedia.org/wiki/Hamiltonian_path) is a path in an undirected or directed graph that visits each vertex exactly once. With a *Hamiltonian path*, the two adjacent points of a vertex in the path will be the 2 matches that a player can chat with anonymously, perfectly fitting the needs of Delicacies Matchmaking.
+
+![Red: Hamiltonian path](https://en.wikipedia.org/wiki/Hamiltonian_path#/media/File:Hamiltonian.png)
+
 ###### A. Creating the Directed Graph (and the purpose of it)
 Using the player list, we put all of the players in a directed graph using the following code in the *main* function:
 ```
@@ -211,7 +215,7 @@ With the following code, we will find all the strongly-connected components of t
 |:---:| 
 |*This code finds all the SCCs of the directed graph of players*|
 
-However, this list includes graphs which consist of one vertex (as a graph by itself can still be considered a strongly-connected component). Thus, we will remove graphs with **no** *Hamilton cycle* by removing all graphs with only 1 vertex from the list. The code is:
+However, this list includes graphs which consist of one vertex (as a graph by itself can still be considered a strongly-connected component). Thus, we will remove graphs with **no** *Hamiltonian cycle* by removing all graphs with only 1 vertex from the list. The code is:
 ```
 List<Graph<Player, DefaultEdge>> new_list_stronglyConnectedSubgraphs = remove_graphs_with_no_hamilton_cycle(stronglyConnectedSubgraphs);
 ```
@@ -245,3 +249,4 @@ However in practice, running DFS on any SCC with the largest number of vertices 
 
 
 ###### B. Creating the solution part 2 (Depth-First Search algorithm)
+
