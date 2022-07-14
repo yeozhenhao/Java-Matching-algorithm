@@ -396,11 +396,7 @@ Thus, our next goal is to **re-run the script with the target set at 310** inste
 |**Excel output of a successful matching of 310 players**. Note how every player in a row fits the preferences of their matches in the row above & the row below|
 |**FYI:**|
 |Only Genderpref, Gender, Age, Maxage, Minage, Religion, and Religionqn are important for matching in this case.|
-
 |*Religion qn = whether matches are comfortable with being matched with any race (no), or the same race (yes)*|
-
 |*Genderpref = Preference of which gender to be matched with*|
-
 |*Maxage = Highest age of preference to be matched with*|
-
 |*Minage = Lowest age of preference to be matched with*|
