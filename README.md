@@ -164,22 +164,25 @@ The code to do this is simply:
 List<Player> player_list = beanBuilder.withType(Player.class).withMappingStrategy(mappingStrategy).build().parse();
 ```
 #### <ins>Advanced - combining Graph Theory and Depth-First Search for a fast matchmaking algorithm</ins>
+
 ##### <ins>1. Graphing.java: Creating the Graph Theory part of the algorithm</ins>
 We need to create an algorithm that generates a *Hamiltonian path* through a directed graph. A [*Hamiltonian path*](https://en.wikipedia.org/wiki/Hamiltonian_path) is a path in an undirected or directed graph that visits each vertex exactly once. With a *Hamiltonian path* (example in red below), the two adjacent points of a vertex in the path will be the 2 matches that a player can chat with anonymously, perfectly fitting the needs of Delicacies Matchmaking.
 
 ![Red: Hamiltonian path](https://upload.wikimedia.org/wikipedia/commons/b/be/Hamiltonian.png)
 
 ###### A. Creating the Directed Graph (and the purpose of it)
-Using the player list, we put all of the players in a directed graph using the following code in the *main* function:
-```
-Graph<Player, DefaultEdge> directedGraph = new DefaultDirectedGraph<Player, DefaultEdge>(DefaultEdge.class);
 
-for (Player p : player_list) {
-			directedGraph.addVertex(p);
-		}
-```
+Using the player list, we put all of the players in a directed graph using the following code in the *main* function:
+
+| ![](./matching/pics/GraphAndEdges.png)
+|:---:| 
+|*Making the directedGraph and Edges*|
 
 *Directed Graph* is a **data structure type** available in the *JGraphT* Java module. [Click here to learn more about directed graphs](https://mathworld.wolfram.com/DirectedGraph.html)
+
+The cool thing about Graph objects in Java is that you get to set the *Edges* for each vertex. An *Edge* of a vertex is another vertex that it can link up with (i.e. a suitable match). Thus, we created a *get_player_edges_from_player_list* function which processes the entire *player_list* and generates the *Edges*. For example, if *Player_one* and *Player_two* are suitable matches, then an *Edge* of (*Player_one*, *Player_two*) can be **added** into the *directedGraph*.
+
+> EXTRA Advanced info: An *Edge* object in the *JGraphT* Java module is essentially the same as a *Pair* object in Java. Thus, my *get_player_edges_from_player_list* function returns a *Pair* object which I used to input as an *Edge* in *directedGraph*. 
 
 <ins>How this applies to Delicacies Matchmaking:</ins>\
 We want every player to be a vertex (aka point) on a graph.
@@ -280,6 +283,10 @@ We choose a random player from *listOfNodes* as the first player, and add it to 
 
 As the very first step in the DFS algorithm, we will add *start* into *stack_path* as a possible answer. 
 
+| ![](./matching/pics/DFS1.png)
+|:---:| 
+|*First possible answer stack_path with its corresponding graph in stack_graph*|
+
 While *stack_path* is not empty, we will pop out the most recent possible path with *stack_path.pop()*, then add one more possible player to the path (based on the first player's matchmaking preferences), then push it back to *stack_path*. However, because the first player may have numerous suitable matches, there will be numerous possible paths of size two (i.e. two players) pushed back into *stack_path*.
 
 To do this, we will first get the last player (stored in *last_player_in_path*) in the path that was just popped out (stored in *current_path*). Then find the list of neighbours (i.e. the suitable matches) in the *current_graph*.
@@ -306,10 +313,30 @@ We will push *conf_g* back into *stack_graph*
 
 The "while *stack_path* is not empty* condition will run forever. **However, we know that it may take forever to find for a perfect solution**. Thus, we need to artificially set a size of the path that we are comfortable with. For example, if I am comfortable matchmaking 300 out of 400 sign-ups, I would set *length_of_paths_considered_complete* as 300. If the size of the path is equal to *length_of_paths_considered_complete*, I want the *dfsWithoutRecursion* function to return me the path (i.e. the *List* of players).
 
+| ![](./matching/pics/DFS2.png)
+|:---:| 
+|*stack_path_reset is just a temporary container for stack_path, and stack_graph_reset is also a temporary container for stack_graph*|
+
 So, we create a **for** loop where for every *List* of players in the *Stack* of possible paths (stored in *stack_path_reset*, we would calculate the size of each *List*. If any of the *Lists* matches the required number of players, *dfsWithoutRecursion* function will stop running and return me the list of players (the *p_list*).
 
 > This is essential as it ensures that, if we continue generating possible *Hamiltonian* paths of lengths 3, 4, 5, etc., we would not erroneously add players into new paths which were already added before, creating a path with two duplicate players. As every new possible 
 
-If path is not found yet (*path_list_found == false*), then we will rerun the while loop with a *stack_path* of size 2 with their corresponding graphs (with first player removed) in *stack_graph*.
+If path is not found yet (*path_list_found == false*), then we will re-run the while loop with a *stack_path* of size 2 with their corresponding graphs (with first player removed) in *stack_graph*.
 
-> NOTE: The reason why we have to create a duplicate dummy *Stack* called *stack_graph_reset* instead of using the original *stack_path* in the loop is because of concurrency errors; we are not allowed to push and pop the same *Stack* in the loop for unknown reasons.
+| ![](./matching/pics/DFS3.png)
+|:---:| 
+|*Final part of the DFS algorithm*|
+
+> EXTRA Advanced info: The reason why we have to create a temporary container *Stacks* called *stack_path_reset* and *stack_graph_reset* instead of using the original *stack_path* and *stack_graph* in both **for** loops above is because of concurrency errors; we are not allowed to remove or add anything into the same *Stack* in separate **for** loops. I believe it is because both **for** loops run concurrently. According to (NTU's Multithreading and Concurrency Programming Tutorial](https://www3.ntu.edu.sg/home/ehchua/programming/java/j5e_multithreading.html#:~:text=A%20typical%20Java%20program%20runs,with%20the%20main()%20method.): "A typical Java program runs in a single process, and is not interested in multiple processes. **However, within the process, it often uses multiple threads to to run multiple tasks concurrently**. A standalone Java application starts with a single thread (called *main thread*) associated with the *main()* method. This *main thread* can then start new user threads" 
+
+> As the first for loop evaluates the next element with the Iterator's *.next()*, if the *.next()* function detects that the *stack_path_reset* has been changed while the **for** loop has not ended, it will raise the *ConcurrentModificationException* (see [this StackOverflow article](https://stackoverflow.com/questions/223918/iterating-through-a-collection-avoiding-concurrentmodificationexception-when-re) for explanation on how *.next()* raises the Exception)
+
+> Also, only evaluating *stack_path_reset* in every iteration of the entire **while** loop ensures that we only check the new paths that were generated every time, and not repeatedly evaluating all of the thousands of paths that we already had checked before.
+
+To prevent [OutOfMemoryError](https://rollbar.com/blog/how-to-handle-outofmemoryerror-exceptions-in-java/#:~:text=OutOfMemoryError%20is%20a%20runtime%20error,lang.), we will delete the first elements of the *Stack*. The reason is simple: when we have possible paths of *path_length* > 200 players, we will want to delete maybe all the paths that are of path_length much lower than 200. To do so, we simply set an integer of our choice (called *stack_path_clearing_divisor_number*), and then we calculate the integer answer of the *stack_path*/*stack_path_clearing_divisor_number*, then tell Java to delete the first couple elements of it. This function helps greatly reduce our memory usage, as the greater the number of paths in the *Stack*, the greater the number of elements will be deleted. In our case, we set *stack_path_clearing_divisor_number* as 500, which helps to keep the maximum number of paths around **20,000-40,000**.
+
+| ![](./matching/pics/OOM1.png)
+|:---:| 
+|*With stack_path_clearing_divisor_number set as 500, the maximum number of stack_path is 43819. Notice how the size of stack_path decreases as time goes on - which corresponds to how the first elements are still being deleted & there are lesser possibilities of matching with the lesser number of matches left*|
+
+###### E. Final touch-ups

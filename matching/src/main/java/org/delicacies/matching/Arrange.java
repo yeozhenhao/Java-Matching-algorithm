@@ -249,16 +249,17 @@ public class Arrange {
 	        	stack_path_reset.push(conf_p);
 	        	stack_graph_reset.push(conf_g);
 	        }
-	        for (List<Player> p_list : stack_path_reset) {
-//	        	System.out.println("\nList length: " + p_list.size());
-	        	if (p_list.size() == length_of_paths_considered_complete) {
+	        for (Iterator<List<Player>> iterator = stack_path_reset.iterator(); iterator.hasNext();) {
+	        	List<Player> p_list = iterator.next();
+	        	int path_length = p_list.size();
+//	        	System.out.println("\nList length: " + path_length);
+	        	if (path_length == length_of_paths_considered_complete) {
 	        		path_list_found = true;
 	        		return p_list;
 	        	} else {
-	        		int path_length = p_list.size();
 	        		System.out.println("\nPath length (progress): " + path_length + " / " + max_possible_path_length);
 	        	}
-//        	System.out.println("\nTarget: " + length_of_paths_considered_complete);
+        	System.out.println("Target: " + length_of_paths_considered_complete);
 	        if (path_list_found == false) {
 	        	stack_path.addAll(stack_path_reset);
 	        	stack_graph.addAll(stack_graph_reset);
