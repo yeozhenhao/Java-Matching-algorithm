@@ -170,7 +170,7 @@ We need to create an algorithm that generates a *Hamiltonian path* through a dir
 
 ![Red: Hamiltonian path](https://upload.wikimedia.org/wikipedia/commons/b/be/Hamiltonian.png)
 
-###### A. Creating the Directed Graph (and the purpose of it)
+###### A. Creating the Directed Graph and adding its Edges
 
 Using the player list, we put all of the players in a directed graph using the following code in the *main* function:
 
