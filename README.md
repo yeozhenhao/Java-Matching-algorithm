@@ -180,12 +180,12 @@ Using the player list, we put all of the players in a directed graph using the f
 
 *Directed Graph* is a **data structure type** available in the *JGraphT* Java module. [Click here to learn more about directed graphs](https://mathworld.wolfram.com/DirectedGraph.html)
 
-The cool thing about Graph objects in Java is that you get to set the *Edges* for each vertex. An *Edge* of a vertex is another vertex that it can link up with (i.e. a suitable match). Thus, we created a *get_player_edges_from_player_list* function which processes the entire *player_list* and generates the *Edges*. For example, if *Player_one* and *Player_two* are suitable matches, then an *Edge* of (*Player_one*, *Player_two*) can be **added** into the *directedGraph*.
+The cool thing about *Graph* objects in Java is that you get to set the *Edges* for each vertex. An *Edge* of a vertex is another vertex that it can link up with (i.e. a suitable match). Thus, we created a *get_player_edges_from_player_list* function which processes the entire *player_list* and generates the *Edges*. For example, if *Player_one* and *Player_two* are suitable matches, then an *Edge* of (*Player_one*, *Player_two*) can be **added** into the *directedGraph*.
 
 > EXTRA Advanced info: An *Edge* object in the *JGraphT* Java module is essentially the same as a *Pair* object in Java. Thus, my *get_player_edges_from_player_list* function returns a *Pair* object which I used to input as an *Edge* in *directedGraph*. 
 
 <ins>How this applies to Delicacies Matchmaking:</ins>\
-We want every player to be a vertex (aka point) on a graph.
+We want every player to be a vertex (aka a point) on a graph.
 
 Then, we want to draw a line through as many players as possible, where **every  connection of one player to another in the graph means the two players are suitable matches** (i.e. matchmaking preferences respected).
 Drawing a line through every vertex forms a **directed** graph.
@@ -197,7 +197,7 @@ List<Player> player_list = DijkstraShortestPath.findPathBetween(graph, starting_
 
 [Dijikstra's shortest path algorithm runs with a time complexity of O(E + VLogV) time.](https://www.geeksforgeeks.org/shortest-path-for-directed-acyclic-graphs/)
 
-But we cannot have most of our Players not getting any suitable matches. Thus, in our case, we need to find the longest path from any one *Player* vertex to the next, and choose the longest path. [Unfortunately, finding the longest path in any general path is **NP-hard**.](https://www.geeksforgeeks.org/find-longest-path-directed-acyclic-graph/) In simpler terms, [NP-hard](https://simple.wikipedia.org/wiki/NP-hardness#:~:text=An%20NP%2Dhard%20problem%20is,be%20checked%20as%20being%20true.) means that even the fastest computers in the world cannot find a **perfect** solution.
+But we cannot use this algorithm as most of our Players would not get any suitable matches. Thus, in our case, we need to find the longest path from any one *Player* vertex to the next, and choose the longest path. [Unfortunately, finding the longest path in any general path is **NP-hard**.](https://www.geeksforgeeks.org/find-longest-path-directed-acyclic-graph/) In simpler terms, [NP-hard](https://simple.wikipedia.org/wiki/NP-hardness#:~:text=An%20NP%2Dhard%20problem%20is,be%20checked%20as%20being%20true.) means that even the fastest computers in the world cannot find a **perfect** solution.
 
 >However, do we really need a perfect solution?
 
@@ -267,6 +267,12 @@ If no accepted_player_list is generated, then the DFS algorithm is run again. Si
 
 To create the DFS algorithm, we have to play around with the *Stack* Java data structures. A *Stack* is an advanced kind of *List*; with a *push* command, you add something to the top of the stack, and with a *pop* command, you remove something from the top of the stack (i.e. remove the most recently added item).
 
+> **IMPT:** The *Stack* is **crucial** in this algorithm. We aim to build a stack of possible paths that are possible solutions, with the longest path being at the top. 
+> To continue finding the longest path, we take the longest path we have at the top of the stack, and then add one more suitable match of the previous player, then add this new path back to the stack. This process repeats to try to find the longest path.
+> But in the event that the newly added player is a dead end, i.e. has 0 possible matches, then the algorithm will remove this dead-end path from the top of the *Stack*, and continue building the path from the **previous player** (i.e. using the next topmost path in the *Stack*). **In this way, the *Stack* enables Java to throw away paths that lead to dead-ends and reverse back to shorter paths before continuing to build a longer path from there, without going back to paths that Java has already processed before.** Thus, the *Stack* data structures are core to the Depth-First Search algorithm.
+
+> **IMPT:** The *Stack* is also essential in preventing Java from re-processing longer paths that it had already traversed before. This is because, whenever Java regresses to a shorter path multiple times from (possibly multiple) dead-end longer paths, all the paths that lead to the dead-end path have already been removed from the *Stack*.
+
 | ![](./matching/pics/java-stack.png)
 |:---:| 
 |*Pushing and Popping a Stack Java data structure*|
@@ -279,6 +285,10 @@ We choose a random player from *listOfNodes* as the first player, and add it to 
 
 <ins>We will create **2** *Stacks*:</ins>
 1. *stack_graph* to store a stack of SCC graphs (of the highest number of vertices)
+
+> **IMPT:** The stack_graph is essential in finding neighbours of its associated path. A longer path is generated by finding the neighbours of the last player in the path. Whenever all possibilities of a longer path is generated with the **addition of 1 neighbour**, the player is removed from its associated graph so that future longer paths will never suggest paths that terminate onto itself. *(FYI: the player was just used to find its neighbours)*.
+> For every possibility generated, a path is added back to the *stack_path* **at the same order/level** as its graph that is also added to *stack_graph*. This is how we ensure that the **path** and **graph** in *stack_path* and *stack_graph* always correspond with each other.
+
 2. *stack_path* to store a stack of *Lists* of players. Each *List* is a possible *Hamiltonian* path, and we would choose the *List* with the greatest number of players (i.e. the longest path) from this *Stack*, and we would get the solution we need.
 
 As the very first step in the DFS algorithm, we will add *start* into *stack_path* as a possible answer. 
@@ -337,6 +347,43 @@ To prevent [OutOfMemoryError](https://rollbar.com/blog/how-to-handle-outofmemory
 
 | ![](./matching/pics/OOM1.png)
 |:---:| 
-|*With stack_path_clearing_divisor_number set as 500, the maximum number of stack_path is 43819. Notice how the size of stack_path decreases as time goes on - which corresponds to how the first elements are still being deleted & there are lesser possibilities of matching with the lesser number of matches left*|
+|*With stack_path_clearing_divisor_number set as 500, the maximum number of stack_path is 43839. Notice how the size of stack_path decreases as time goes on - which corresponds to how the first elements are still being deleted & there are lesser possibilities of matching with the lesser number of matches left*|
 
-###### E. Final touch-ups
+###### E. Demonstration of the algorithm (in pictures)
+We will use a demonstration with simulated player data of 364 sign-ups.
+
+We will set:
+```
+final Integer length_of_paths_considered_complete = 310;
+final Integer stack_path_clearing_divisor_number = 500;
+```
+
+| ![](./matching/pics/demo0.png)
+|:---:| 
+|*Simulated Excel file of 364 signups to be imported into the Java script*|
+
+| ![](./matching/pics/demo1.png)
+|:---:| 
+|*Starting the algorithm: Date & Timing is detected, and a list of player edges is created based on matchmaking preferences in player_list. Every player is labelled with their Telegram usernames*|
+
+| ![](./matching/pics/demo2.png)
+|:---:| 
+|After all the player edges have been added, dfsWithoutRecursion now runs on the directedGraph, and starts formulating a path to our target of **309 players**|
+
+| ![](./matching/pics/demo3.png)
+|:---:| 
+|When a possible path of 309 players is found, the DFS algorithm stops and exports out this path in the *directedGraph* as an Excel file. The script took only **98.812 seconds** to find a solution!|
+
+| ![](./matching/pics/demo3.png)
+|:---:| 
+|In another re-run of this script, we set a target of 311 players which **may be too high** for the graph to find a possible path in **non-deterministic polynomial time** (even a supercomputer may take a long time [or forever] to find a perfect answer). This is evidenced from how the script is **forever stuck in the loop of finding the longest path**.|
+
+In this runtime, the script **failed** to find a solution of 311 players.
+
+However, **a different runtime of the script may find a solution** for 311 players as the starting player of the path & the possibilities generated will be different. Thus, this algorithm is **non-deterministic**; it gives *variable results* every time you run the script for the *same input*.
+
+Thus, our next goal is to **re-run the script with the target set at 310** instead, and see if we could find a **better solution** than the previous solution of 309 players.
+
+| ![](./matching/pics/demo4.png)
+|:---:|
+|Script stuck in a possibly ?forever loop of finding a path with 310 players until finally it managed to find a solution after **135.958 seconds**. Thus we can assume that the Excel file 310 is the best solution we can|

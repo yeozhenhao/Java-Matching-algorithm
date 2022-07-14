@@ -51,9 +51,11 @@ import com.opencsv.exceptions.CsvValidationException;
 public class Graphing extends Arrange {
 
 	public static void main(String[] args) throws FileNotFoundException, IOException, CsvValidationException {
-		// TODO Auto-generated method stub
+		//Start the timer
+		double startTime = System.currentTimeMillis(); //or nanoTime()
+		
 		final Integer maxlimit = Integer.valueOf(0); //Set max algorithm path limit (in case of high player numbers)
-		final Integer length_of_paths_considered_complete = 308;
+		final Integer length_of_paths_considered_complete = 309;
 		final Integer stack_path_clearing_divisor_number = 500; // A Java server with 2GB RAM stack_path size can handle up to 400,000 before crashing (OutOfMemory Error) 
 		
 		// Find the current date and time in your system; to be used in naming the csv outputs
@@ -182,9 +184,13 @@ public class Graphing extends Arrange {
         } 
         System.out.println("\n=============Graph path found for desired path length " + length_of_paths_considered_complete + "! Algorithm stopped.=============");
         
-        
-        
-        
+        //Stop the timer
+        double endTime = System.currentTimeMillis(); // NOTE: Integer division will give only an integer result. See https://stackoverflow.com/questions/33273809/how-to-get-java-to-produce-decimal-points-while-dividing
+		double duration = (endTime - startTime)/1000;  //if nanoTime() is used, divide by 1000000 to get milliseconds.
+		System.out.println("\nstartTime = **"+ startTime + "** milliseconds");
+		System.out.println("\nendTime = **"+ endTime + "** milliseconds");
+		System.out.println("\nThe script took **"+ duration + "** seconds to find a solution!");
+		
         List<Player> rejected_player_list = return_rejected_player_list(player_list, accepted_player_list);
         try {
         writeRowsToCsv(accepted_players_csv_output, accepted_player_list, mappingStrategy);
